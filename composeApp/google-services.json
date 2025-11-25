@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1015502528236",
+    "project_id": "discipline-app-2434d",
+    "storage_bucket": "discipline-app-2434d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015502528236:android:356f142044c9515164cfc9",
+        "android_client_info": {
+          "package_name": "com.honeycomb.disciplineapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1015502528236-sf2l0f14125r1n9hbfmod37tj5k7p0cg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.honeycomb.disciplineapp",
+            "certificate_hash": "c4db95ea04906ca7905da4f0d560ed1e08a2ba56"
+          }
+        },
+        {
+          "client_id": "1015502528236-56fd6ig469qluu5n47u9ehekoamvh9hu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSxWaOgef-FGBUWgoTtyHXSwMauQUjBs4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1015502528236-56fd6ig469qluu5n47u9ehekoamvh9hu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1015502528236-73ac92hdr3011ssib8jvji990d37j526.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.honeycomb.disciplineapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
