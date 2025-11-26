@@ -1,0 +1,136 @@
+{
+  "title": "Start a routine",
+  "options": [
+    {
+      "title": "Your routine starts here",
+      "subtitle": "Add habits. Then prove why you are serious",
+      "type": "HABIT",
+      "button": {
+        "type": "PRIMARY_SMALL_BUTTON",
+        "title": "Add a habit"
+      },
+      "button_text": "Add a habit",
+      "habit_data": {
+        "evidence_bs": {
+          "title": "Select an evidence for your task",
+          "options": [
+            {
+              "type": "PHOTO",
+              "title": "📷  Photo",
+              "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
+            },
+            {
+              "type": "LOCATION_CHECK_IN",
+              "title": "📷  Photo",
+              "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
+            },
+            {
+              "type": "LOCATION_CHECK_OUT",
+              "title": "📷  Photo",
+              "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
+            }
+          ]
+        },
+        "evidences": [
+          {
+            "type": "PHOTO",
+            "fields": [
+              {
+                "type": "BOTTOMSHEET",
+                "id": "evidence",
+                "bs": {
+                  "title": "Select a evidence",
+                  "selected": "PHOTO"
+                }
+              },
+              {
+                "type": "INPUT_FIELD",
+                "id": "name",
+                "input_field": {
+                  "title": "I will send a photo of",
+                  "hint": [
+                    "Meditating",
+                    "Going to gym.."
+                  ],
+                  "max_length": 100
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "photo",
+                "drop_down": {
+                  "title": "Upload a",
+                  "options": [
+                    {
+                      "title": "Photo (camera/gallery)",
+                      "selected": true,
+                      "id": "PHOTO_ALL"
+                    },
+                    {
+                      "title": "Photo from camera",
+                      "selected": false,
+                      "id": "PHOTO_CAMERA"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "SELECTION",
+                "id": "repeat",
+                "drop_down": {
+                  "title": "Repeat",
+                  "options": [
+                    {
+                      "title": "Once",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "title": "Daily",
+                      "selected": false,
+                      "id": "DAILY"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "BOTTOMSHEET",
+                "id": "additional_options",
+                "bottomsheet": {
+                  "title": "Before"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Put something at stake",
+      "subtitle": "Commit hard. Make quitting expensive",
+      "type": "PENALTY",
+      "button": {
+        "type": "SECONDARY_SMALL_BUTTON",
+        "title": "Add a penalty"
+      }
+    }
+  ]
+}

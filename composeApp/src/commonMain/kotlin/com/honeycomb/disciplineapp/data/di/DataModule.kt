@@ -3,9 +3,11 @@ package com.honeycomb.disciplineapp.data.di
 import com.honeycomb.disciplineapp.data.repository.HomeRepositoryImpl
 import com.honeycomb.disciplineapp.data.repository.LoginRepositoryImpl
 import com.honeycomb.disciplineapp.data.repository.OnboardingRepositoryImpl
+import com.honeycomb.disciplineapp.data.repository.StartRoutineRepositoryImpl
 import com.honeycomb.disciplineapp.domain.repository.HomeRepository
 import com.honeycomb.disciplineapp.domain.repository.LoginRepository
 import com.honeycomb.disciplineapp.domain.repository.OnboardingRepository
+import com.honeycomb.disciplineapp.domain.repository.StartRoutineRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.app
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -28,5 +30,8 @@ val dataModule = module {
     }
     factory <HomeRepository> {
         HomeRepositoryImpl(get())
+    }
+    factory <StartRoutineRepository> {
+        StartRoutineRepositoryImpl(get())
     }
 }
