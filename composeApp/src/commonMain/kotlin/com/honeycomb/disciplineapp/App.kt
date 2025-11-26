@@ -10,12 +10,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.honeycomb.disciplineapp.data.dto.HabitDataDto
 import com.honeycomb.disciplineapp.data.dto.OnboardingDto
 import com.honeycomb.disciplineapp.presentation.Screen
+import com.honeycomb.disciplineapp.presentation.models.HabitDataScreenType
 import com.honeycomb.disciplineapp.presentation.models.OnboardingScreenType
 import com.honeycomb.disciplineapp.presentation.ui.main.MainScreen
 import com.honeycomb.disciplineapp.presentation.ui.onboarding.OnboardingScreen
 import com.honeycomb.disciplineapp.presentation.ui.splash.SplashScreen
+import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitScreen
 import com.honeycomb.disciplineapp.presentation.ui.start_routine.StartRoutineScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.reflect.typeOf
@@ -62,6 +65,18 @@ fun App() {
                 composable<Screen.StartRoutineScreenRoute> {
                     StartRoutineScreen(
                         navController = navController,
+                        modifier = Modifier
+                    )
+                }
+
+                // add habit
+                composable<Screen.AddHabitScreenRoute>(
+                    typeMap = mapOf(typeOf<HabitDataDto?>() to HabitDataScreenType)
+                ) {
+                    val args = it.toRoute<Screen.AddHabitScreenRoute>()
+                    AddHabitScreen(
+                        navController = navController,
+                        habitData = args.habitData,
                         modifier = Modifier
                     )
                 }

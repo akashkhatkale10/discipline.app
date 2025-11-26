@@ -35,6 +35,7 @@ import com.honeycomb.disciplineapp.LightBackgroundColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.nunitoFontFamily
+import com.honeycomb.disciplineapp.presentation.Screen
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.BorderIconButton
 import com.honeycomb.disciplineapp.presentation.ui.common.ButtonComponent
@@ -149,7 +150,14 @@ fun StartRoutineScreen(
                                             )
                                         },
                                         onClick = {
-
+                                            val isHabit = option.type?.equals("HABIT", ignoreCase = true) == true
+                                            if (isHabit && option.habitData != null) {
+                                                navController.navigate(
+                                                    Screen.AddHabitScreenRoute(
+                                                        habitData = option.habitData
+                                                    )
+                                                )
+                                            }
                                         }
                                     )
                                 },

@@ -3,6 +3,7 @@ package com.honeycomb.disciplineapp.presentation.models
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
 import com.eygraber.uri.UriCodec
+import com.honeycomb.disciplineapp.data.dto.HabitDataDto
 import com.honeycomb.disciplineapp.data.dto.OnboardingDto
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,4 +28,28 @@ val OnboardingScreenType = object : NavType<OnboardingDto>(
         return UriCodec.encode(Json.encodeToString(value))
     }
 
+}
+
+val HabitDataScreenType = object : NavType<HabitDataDto?>(
+    isNullableAllowed = true
+) {
+    override fun get(bundle: Bundle, key: String): HabitDataDto? {
+        val storedValue = bundle.getString(key) ?: return null
+        if (storedValue.isBlank() || storedValue == "null") return null
+        return Json.decodeFromString<HabitDataDto?>(storedValue)
+    }
+
+    override fun parseValue(value: String): HabitDataDto? {
+        if (value.isBlank() || value == "null") return null
+        return Json.decodeFromString<HabitDataDto?>(UriCodec.decode(value))
+    }
+
+    override fun put(bundle: Bundle, key: String, value: HabitDataDto?) {
+        val serialized = Json.encodeToString<HabitDataDto?>(value)
+        bundle.putString(key, serialized)
+    }
+
+    override fun serializeAsValue(value: HabitDataDto?): String {
+        return UriCodec.encode(Json.encodeToString<HabitDataDto?>(value))
+    }
 }

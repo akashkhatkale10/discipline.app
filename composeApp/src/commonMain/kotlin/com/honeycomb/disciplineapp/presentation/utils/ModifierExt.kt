@@ -14,20 +14,30 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.honeycomb.disciplineapp.LightBackgroundColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import kotlin.math.roundToInt
@@ -105,4 +115,54 @@ fun Modifier.shimmer(
     )
 
     Modifier.background(brush)
+}
+
+
+
+fun Modifier.dashedBorder(
+    strokeWidth: Dp,
+    color: Color,
+    cornerRadius: Dp,
+    dashOn: Float = 10f,
+    dashOff: Float = 8f
+): Modifier = this.then(
+    Modifier.drawBehind {
+        val stroke = strokeWidth.toPx()
+        val corner = cornerRadius.toPx()
+        val halfStroke = stroke / 2f
+        val pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashOn, dashOff))
+        val rectSize = Size(
+            width = size.width - stroke,
+            height = size.height - stroke
+        )
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(halfStroke, halfStroke),
+            size = rectSize,
+            cornerRadius = CornerRadius(corner, corner),
+            style = Stroke(width = stroke, pathEffect = pathEffect)
+        )
+    }
+)
+
+@Composable
+fun Modifier.clickableWithoutRipple(onClick: () -> Unit): Modifier = this.then(
+    Modifier
+        .clip(RoundedCornerShape(16.dp))
+        .background(Color.Transparent)
+        .noRippleClickable(onClick)
+)
+
+@Composable
+fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier {
+    val interaction = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    return this.then(
+        Modifier
+            .clickable(
+                indication = null,
+                interactionSource = interaction
+            ) {
+                onClick()
+            }
+    )
 }

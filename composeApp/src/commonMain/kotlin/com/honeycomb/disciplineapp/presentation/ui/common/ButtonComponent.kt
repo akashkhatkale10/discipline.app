@@ -43,6 +43,7 @@ fun ButtonComponent(
                 text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
+                onClick = onClick
             )
         }
         ButtonDto.ButtonType.SECONDARY_SMALL_BUTTON -> {
@@ -50,7 +51,8 @@ fun ButtonComponent(
                 text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
-                backgroundColor = LightBackgroundColor
+                backgroundColor = LightBackgroundColor,
+                onClick = onClick
             )
         }
         null, ButtonDto.ButtonType.NONE -> Unit

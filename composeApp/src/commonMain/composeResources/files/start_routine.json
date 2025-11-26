@@ -21,8 +21,8 @@
             },
             {
               "type": "LOCATION_CHECK_IN",
-              "title": "📷  Photo",
-              "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
+              "title": "\uD83D\uDCCD Location check-in",
+              "subtitle": "Open the app at a particular location to prove you \nwere there by a certain time. Or else you lose"
             },
             {
               "type": "LOCATION_CHECK_OUT",

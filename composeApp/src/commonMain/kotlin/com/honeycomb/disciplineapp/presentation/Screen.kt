@@ -1,5 +1,6 @@
 package com.honeycomb.disciplineapp.presentation
 
+import com.honeycomb.disciplineapp.data.dto.HabitDataDto
 import com.honeycomb.disciplineapp.data.dto.OnboardingDto
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,11 @@ sealed class Screen {
 
     @Serializable
     data object StartRoutineScreenRoute : Screen()
+
+    @Serializable
+    data class AddHabitScreenRoute(
+        val habitData: HabitDataDto? = null
+    ) : Screen()
 
     @Serializable
     data class OnboardingScreenRoute(
