@@ -5,16 +5,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StartRoutineDto(
-    @SerialName("title") val title: String?,
+    @SerialName("title") val title: String? = null,
     @SerialName("options") val options: List<RoutineOptionDto>?
 )
 
 @Serializable
 data class RoutineOptionDto(
-    @SerialName("title") val title: String?,
-    @SerialName("subtitle") val subtitle: String?,
-    @SerialName("type") val type: String?, // HABIT?, PENALTY
-    @SerialName("button") val button: ButtonDto?,
+    @SerialName("title") val title: String? = null,
+    @SerialName("subtitle") val subtitle: String? = null,
+    @SerialName("type") val type: String? = null, // HABIT? = null, PENALTY
+    @SerialName("button") val button: ButtonDto? = null,
     @SerialName("habit_data") val habitData: HabitDataDto? = null // Only for type = "HABIT"
 )
 
@@ -24,8 +24,9 @@ data class RoutineOptionDto(
 
 @Serializable
 data class HabitDataDto(
-    @SerialName("evidence_bs") val evidenceBs: EvidenceBsDto?,
-    @SerialName("evidences") val evidences: List<EvidenceDto>?
+    @SerialName("evidence_bs") val evidenceBs: EvidenceBsDto? = null,
+    @SerialName("evidences") val evidences: List<EvidenceDto>? = null,
+    @SerialName("button") val button: ButtonDto?
 )
 
 // ─────────────────────────────────────────────
@@ -34,60 +35,58 @@ data class HabitDataDto(
 
 @Serializable
 data class EvidenceBsDto(
-    @SerialName("title") val title: String?,
+    @SerialName("title") val title: String? = null,
     @SerialName("options") val options: List<OptionDto>?
 )
 
 @Serializable
 data class OptionDto(
-    @SerialName("type") val type: String?,
-    @SerialName("title") val title: String?,
+    @SerialName("type") val type: String? = null,
+    @SerialName("title") val title: String? = null,
     @SerialName("subtitle") val subtitle: String?
 )
 
 @Serializable
 data class EvidenceDto(
-    @SerialName("type") val type: String?,
+    @SerialName("type") val type: String? = null,
     @SerialName("fields") val fields: List<FieldDto>?
 )
 
 @Serializable
 data class FieldDto(
-    @SerialName("type") val type: String?,
-    @SerialName("id") val id: String?,
+    @SerialName("type") val type: String? = null,
+    @SerialName("id") val id: String? = null,
     @SerialName("bs") val bs: BottomSheetValueDto? = null,
     @SerialName("input_field") val inputField: InputFieldDto? = null,
     @SerialName("drop_down") val dropDown: DropDownDto? = null,
-    @SerialName("bottomsheet") val bottomSheet: BottomSheetDto? = null
+    @SerialName("selection") val selection: DropDownDto? = null,
 )
 
 @Serializable
 data class BottomSheetValueDto(
-    @SerialName("title") val title: String?,
-    @SerialName("selected") val selected: String?
+    @SerialName("title") val title: String? = null,
+    @SerialName("selected_value") val selected: String?
 )
 
 @Serializable
 data class InputFieldDto(
-    @SerialName("title") val title: String?,
-    @SerialName("hint") val hint: List<String>?,
+    @SerialName("title") val title: String? = null,
+    @SerialName("hint") val hint: List<String>? = null,
     @SerialName("max_length") val maxLength: Int?
 )
 
 @Serializable
 data class DropDownDto(
-    @SerialName("title") val title: String?,
+    @SerialName("title") val title: String? = null,
+    @SerialName("bs_title") val bsTitle: String? = null,
     @SerialName("options") val options: List<DropDownOptionDto>?
 )
 
 @Serializable
 data class DropDownOptionDto(
     @SerialName("title") val title: String? = null,
-    @SerialName("selected") val selected: Boolean?,
+    @SerialName("subtitle") val subtitle: String? = null,
+    @SerialName("selected") val selected: Boolean? = null,
     @SerialName("id") val id: String?
 )
 
-@Serializable
-data class BottomSheetDto(
-    @SerialName("title") val title: String?
-)

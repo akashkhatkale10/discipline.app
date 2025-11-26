@@ -154,8 +154,9 @@ fun StartRoutineScreen(
                                             if (isHabit && option.habitData != null) {
                                                 navController.navigate(
                                                     Screen.AddHabitScreenRoute(
-                                                        habitData = option.habitData
+                                                        habitData = option.habitData!!
                                                     )
+//                                                    Screen.AddHabitScreenRoute
                                                 )
                                             }
                                         }

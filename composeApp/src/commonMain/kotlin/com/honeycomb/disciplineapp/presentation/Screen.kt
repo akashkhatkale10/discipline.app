@@ -16,9 +16,9 @@ sealed class Screen {
     data object StartRoutineScreenRoute : Screen()
 
     @Serializable
-    data class AddHabitScreenRoute(
-        val habitData: HabitDataDto? = null
-    ) : Screen()
+    data class AddHabitScreenRoute
+        (val habitData: HabitDataDto)
+         : Screen()
 
     @Serializable
     data class OnboardingScreenRoute(

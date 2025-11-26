@@ -71,7 +71,7 @@ fun App() {
 
                 // add habit
                 composable<Screen.AddHabitScreenRoute>(
-                    typeMap = mapOf(typeOf<HabitDataDto?>() to HabitDataScreenType)
+                    typeMap = mapOf(typeOf<HabitDataDto>() to HabitDataScreenType)
                 ) {
                     val args = it.toRoute<Screen.AddHabitScreenRoute>()
                     AddHabitScreen(

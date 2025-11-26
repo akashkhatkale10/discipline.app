@@ -43,7 +43,8 @@ import kotlin.collections.orEmpty
 @Composable
 fun EvidenceSelectionSheet(
     evidence: EvidenceBsDto,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onEvidenceSelected: (OptionDto) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -82,14 +83,17 @@ fun EvidenceSelectionSheet(
                 .padding(top = 40.dp)
         ) {
             evidence.options.orEmpty().forEachIndexed { index, option ->
-                EvidenceOptionRow(option = option)
+                EvidenceOptionRow(
+                    option = option,
+                    onClick = { onEvidenceSelected(option) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CloseChip(
+fun CloseChip(
     onClick: () -> Unit,
     icon: ImageVector
 ) {
@@ -116,11 +120,13 @@ private fun CloseChip(
 
 @Composable
 private fun EvidenceOptionRow(
-    option: OptionDto
+    option: OptionDto,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickableWithoutRipple(onClick),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Column(

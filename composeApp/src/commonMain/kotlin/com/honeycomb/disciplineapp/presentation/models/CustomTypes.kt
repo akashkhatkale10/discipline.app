@@ -30,26 +30,23 @@ val OnboardingScreenType = object : NavType<OnboardingDto>(
 
 }
 
-val HabitDataScreenType = object : NavType<HabitDataDto?>(
-    isNullableAllowed = true
+val HabitDataScreenType = object : NavType<HabitDataDto>(
+    isNullableAllowed = false
 ) {
     override fun get(bundle: Bundle, key: String): HabitDataDto? {
-        val storedValue = bundle.getString(key) ?: return null
-        if (storedValue.isBlank() || storedValue == "null") return null
-        return Json.decodeFromString<HabitDataDto?>(storedValue)
+        return Json.decodeFromString<HabitDataDto>(bundle.getString(key) ?: return null)
     }
 
-    override fun parseValue(value: String): HabitDataDto? {
-        if (value.isBlank() || value == "null") return null
-        return Json.decodeFromString<HabitDataDto?>(UriCodec.decode(value))
+    override fun parseValue(value: String): HabitDataDto {
+        return Json.decodeFromString<HabitDataDto>(UriCodec.decode(value))
     }
 
-    override fun put(bundle: Bundle, key: String, value: HabitDataDto?) {
-        val serialized = Json.encodeToString<HabitDataDto?>(value)
+    override fun put(bundle: Bundle, key: String, value: HabitDataDto) {
+        val serialized = Json.encodeToString<HabitDataDto>(value)
         bundle.putString(key, serialized)
     }
 
-    override fun serializeAsValue(value: HabitDataDto?): String {
-        return UriCodec.encode(Json.encodeToString<HabitDataDto?>(value))
+    override fun serializeAsValue(value: HabitDataDto): String {
+        return UriCodec.encode(Json.encodeToString<HabitDataDto>(value))
     }
 }

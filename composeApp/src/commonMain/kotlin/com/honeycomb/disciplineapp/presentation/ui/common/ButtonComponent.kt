@@ -18,7 +18,7 @@ fun ButtonComponent(
         ButtonDto.ButtonType.PRIMARY_BUTTON -> {
             CustomButton(
                 modifier = modifier,
-                text = button?.type.orEmpty(),
+                text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
                 onClick = {
@@ -29,7 +29,7 @@ fun ButtonComponent(
         ButtonDto.ButtonType.SECONDARY_BUTTON -> {
             CustomButton(
                 modifier = modifier,
-                text = button?.type.orEmpty(),
+                text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
                 onClick = {

@@ -9,7 +9,7 @@ internal suspend inline fun <reified T> readFromFile(fileName: String): T {
     val readBytes = Res.readBytes("files/$fileName")
     val json = Json {
         ignoreUnknownKeys = true
-
+        explicitNulls = false
     }
     return json.decodeFromString(readBytes.decodeToString())
 }

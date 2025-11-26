@@ -39,8 +39,8 @@
                 "type": "BOTTOMSHEET",
                 "id": "evidence",
                 "bs": {
-                  "title": "Select a evidence",
-                  "selected": "PHOTO"
+                  "title": "Select an evidence",
+                  "selected_value": "Photo"
                 }
               },
               {
@@ -60,14 +60,17 @@
                 "id": "photo",
                 "drop_down": {
                   "title": "Upload a",
+                  "bs_title": "Select your upload type",
                   "options": [
                     {
                       "title": "Photo (camera/gallery)",
+                      "subtitle": "You need to upload a photo from your camera roll or from your camera",
                       "selected": true,
                       "id": "PHOTO_ALL"
                     },
                     {
                       "title": "Photo from camera",
+                      "subtitle": "You need to upload a photo from your camera. No gallery allowed",
                       "selected": false,
                       "id": "PHOTO_CAMERA"
                     }
@@ -77,7 +80,7 @@
               {
                 "type": "SELECTION",
                 "id": "repeat",
-                "drop_down": {
+                "selection": {
                   "title": "Repeat",
                   "options": [
                     {
@@ -112,15 +115,127 @@
                 }
               },
               {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "DROP_DOWN",
+                "id": "before",
+                "drop_down": {
+                  "title": "Before",
+                  "options": [
+                    {
+                      "title": "Anytime",
+                      "selected": true,
+                      "id": "ONCE"
+                    },
+                    {
+                      "selected": false,
+                      "id": "TIME_PICKER"
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "BOTTOMSHEET",
                 "id": "additional_options",
-                "bottomsheet": {
-                  "title": "Before"
+                "bs": {
+                  "selected_value": "Additional options"
                 }
               }
             ]
           }
-        ]
+        ],
+        "button": {
+          "type": "PRIMARY_BUTTON",
+          "title": "Add this habit"
+        }
       }
     },
     {

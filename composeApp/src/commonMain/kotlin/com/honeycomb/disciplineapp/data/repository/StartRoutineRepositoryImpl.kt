@@ -15,6 +15,7 @@ class StartRoutineRepositoryImpl(
             val result = readFromFile<StartRoutineDto>("start_routine.json")
             return Result.success(result)
         } catch (e: Exception) {
+            println(e.message)
             return Result.failure(e)
         }
     }

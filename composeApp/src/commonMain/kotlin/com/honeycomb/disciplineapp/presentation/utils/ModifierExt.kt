@@ -148,7 +148,6 @@ fun Modifier.dashedBorder(
 @Composable
 fun Modifier.clickableWithoutRipple(onClick: () -> Unit): Modifier = this.then(
     Modifier
-        .clip(RoundedCornerShape(16.dp))
         .background(Color.Transparent)
         .noRippleClickable(onClick)
 )
