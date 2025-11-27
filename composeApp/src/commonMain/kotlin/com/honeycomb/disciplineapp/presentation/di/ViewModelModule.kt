@@ -1,5 +1,6 @@
 package com.honeycomb.disciplineapp.presentation.di
 
+import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitViewModel
 import com.honeycomb.disciplineapp.presentation.ui.home.HomeViewModel
 import com.honeycomb.disciplineapp.presentation.ui.onboarding.OnboardingViewModel
 import com.honeycomb.disciplineapp.presentation.ui.splash.SplashViewModel
@@ -13,6 +14,7 @@ val viewModels = module {
     viewModel { OnboardingViewModel(get()) }
     viewModel { HomeViewModel(get()) }
     viewModel { StartRoutineViewModel(get()) }
+    viewModel { AddHabitViewModel() }
 }
 
 //val remoteConfigModule = module {

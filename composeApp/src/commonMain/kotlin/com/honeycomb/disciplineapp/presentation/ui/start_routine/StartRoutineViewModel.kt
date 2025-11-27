@@ -2,6 +2,7 @@ package com.honeycomb.disciplineapp.presentation.ui.start_routine
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.honeycomb.disciplineapp.data.dto.SetRoutineDto
 import com.honeycomb.disciplineapp.data.dto.StartRoutineDto
 import com.honeycomb.disciplineapp.domain.repository.StartRoutineRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +15,30 @@ class StartRoutineViewModel(
 ): ViewModel() {
 
     private val _state: MutableStateFlow<StartRoutineState> =
-        MutableStateFlow(StartRoutineState())
+        MutableStateFlow(StartRoutineState(
+            routine = SetRoutineDto(
+                habits = emptyList()
+            )
+        ))
     val state = _state.asStateFlow()
+
+    init {
+        getStartRoutine()
+    }
+
+    fun addHabit(
+        habitDto: SetRoutineDto.SetHabitDto
+    ) = viewModelScope.launch {
+        _state.update {
+            it.copy(
+                routine = it.routine?.copy(
+                    habits = it.routine.habits.toMutableList().apply {
+                        add(habitDto)
+                    }
+                )
+            )
+        }
+    }
 
 
     fun getStartRoutine() = viewModelScope.launch {
@@ -45,5 +68,6 @@ class StartRoutineViewModel(
 data class StartRoutineState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val data: StartRoutineDto? = null
+    val data: StartRoutineDto? = null,
+    val routine: SetRoutineDto? = null
 )

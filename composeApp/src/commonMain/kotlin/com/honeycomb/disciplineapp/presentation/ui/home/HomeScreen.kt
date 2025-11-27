@@ -118,6 +118,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .padding(horizontal = HORIZONTAL_PADDING.dp)
                         .fillMaxSize()
+                        .padding(top = 100.dp)
                 )
             }
 
@@ -133,6 +134,8 @@ fun HomeScreen(
                         TitleSubtitleAction(
                             title = addNewScreen?.title.orEmpty(),
                             subtitle = addNewScreen?.subtitle.orEmpty(),
+                            titleFontSize = 18,
+                            titleFontWeight = FontWeight.ExtraBold,
                             action = {
                                 CustomButton(
                                     text = addNewScreen?.buttonTitle.orEmpty(),
@@ -203,7 +206,10 @@ fun TitleSubtitleAction(
     subtitle: String,
     action: @Composable () -> Unit,
     titleComposable: @Composable () -> Unit = {},
+    middleComposable: (@Composable () -> Unit) = {  },
     modifier: Modifier = Modifier,
+    titleFontWeight: FontWeight = FontWeight.Bold,
+    titleFontSize: Int = 16,
 ) {
     Column(
         modifier = modifier,
@@ -218,8 +224,8 @@ fun TitleSubtitleAction(
                 title,
                 style = CustomTextStyle.copy(
                     color = TitleTextColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = titleFontSize.sp,
+                    fontWeight = titleFontWeight
                 ),
                 textAlign = TextAlign.Center
             )
@@ -235,6 +241,9 @@ fun TitleSubtitleAction(
                 .padding(top = 14.dp),
             textAlign = TextAlign.Center
         )
+
+        middleComposable()
+
         Box(
             modifier = Modifier
                 .padding(top = 30.dp)

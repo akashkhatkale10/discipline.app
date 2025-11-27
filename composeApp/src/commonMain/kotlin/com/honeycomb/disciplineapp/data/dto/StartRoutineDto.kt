@@ -87,6 +87,7 @@ data class DropDownOptionDto(
     @SerialName("title") val title: String? = null,
     @SerialName("subtitle") val subtitle: String? = null,
     @SerialName("selected") val selected: Boolean? = null,
+    @SerialName("selected_title") val selectedTitle: String? = null,
     @SerialName("id") val id: String?
 )
 

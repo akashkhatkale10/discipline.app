@@ -12,6 +12,7 @@ fun ButtonComponent(
     endIconComposable: @Composable () -> Unit = {},
     startIconComposable: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
+    state: CustomButtonState = CustomButtonState.Enabled
 ) {
     val type = ButtonDto.ButtonType.fromString(button?.type)
     when (type) {
@@ -23,7 +24,8 @@ fun ButtonComponent(
                 startIconComposable = startIconComposable,
                 onClick = {
                     onClick()
-                }
+                },
+                state = state
             )
         }
         ButtonDto.ButtonType.SECONDARY_BUTTON -> {
@@ -35,7 +37,9 @@ fun ButtonComponent(
                 onClick = {
                     onClick()
                 },
-                backgroundColor = LightBackgroundColor
+                backgroundColor = LightBackgroundColor,
+                state = state,
+                borderColor = LightBackgroundColor
             )
         }
         ButtonDto.ButtonType.PRIMARY_SMALL_BUTTON -> {
@@ -43,7 +47,8 @@ fun ButtonComponent(
                 text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
-                onClick = onClick
+                onClick = onClick,
+                state = state
             )
         }
         ButtonDto.ButtonType.SECONDARY_SMALL_BUTTON -> {
@@ -52,7 +57,8 @@ fun ButtonComponent(
                 endIconComposable = endIconComposable,
                 startIconComposable = startIconComposable,
                 backgroundColor = LightBackgroundColor,
-                onClick = onClick
+                onClick = onClick,
+                state = state
             )
         }
         null, ButtonDto.ButtonType.NONE -> Unit

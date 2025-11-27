@@ -6,7 +6,7 @@
       "subtitle": "Add habits. Then prove why you are serious",
       "type": "HABIT",
       "button": {
-        "type": "PRIMARY_SMALL_BUTTON",
+        "type": "SECONDARY_SMALL_BUTTON",
         "title": "Add a habit"
       },
       "button_text": "Add a habit",
@@ -16,17 +16,7 @@
           "options": [
             {
               "type": "PHOTO",
-              "title": "📷  Photo",
-              "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
-            },
-            {
-              "type": "LOCATION_CHECK_IN",
-              "title": "\uD83D\uDCCD Location check-in",
-              "subtitle": "Open the app at a particular location to prove you \nwere there by a certain time. Or else you lose"
-            },
-            {
-              "type": "LOCATION_CHECK_OUT",
-              "title": "📷  Photo",
+              "title": "Photo  \uD83D\uDCF7",
               "subtitle": "Submit photo evidence of your task, which we manually approve or deny. Either from your camera roll or from your camera"
             }
           ]
@@ -63,15 +53,17 @@
                   "bs_title": "Select your upload type",
                   "options": [
                     {
-                      "title": "Photo (camera/gallery)",
+                      "title": "Photo (camera/gallery)  \uD83D\uDDBC\uFE0F ",
                       "subtitle": "You need to upload a photo from your camera roll or from your camera",
                       "selected": true,
+                      "selected_title": "Photo (camera/gallery)",
                       "id": "PHOTO_ALL"
                     },
                     {
-                      "title": "Photo from camera",
+                      "title": "Photo from camera  \uD83D\uDCF7",
                       "subtitle": "You need to upload a photo from your camera. No gallery allowed",
                       "selected": false,
+                      "selected_title": "Photo from camera",
                       "id": "PHOTO_CAMERA"
                     }
                   ]
@@ -98,115 +90,7 @@
               },
               {
                 "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
-                "drop_down": {
-                  "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "DROP_DOWN",
-                "id": "before",
+                "id": "time",
                 "drop_down": {
                   "title": "Before",
                   "options": [
@@ -243,7 +127,7 @@
       "subtitle": "Commit hard. Make quitting expensive",
       "type": "PENALTY",
       "button": {
-        "type": "SECONDARY_SMALL_BUTTON",
+        "type": "PRIMARY_SMALL_BUTTON",
         "title": "Add a penalty"
       }
     }

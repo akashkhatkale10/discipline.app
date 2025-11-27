@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,11 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -77,26 +74,35 @@ import androidx.compose.ui.text.withStyle
 import com.honeycomb.disciplineapp.AccentColor
 import com.honeycomb.disciplineapp.AccentColor2
 import com.honeycomb.disciplineapp.CustomTextStyle
+import com.honeycomb.disciplineapp.LightestBackgroundColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.data.dto.BottomSheetValueDto
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.EvidenceSelectionSheet
 import com.honeycomb.disciplineapp.presentation.ui.common.BorderIconButton
 import com.honeycomb.disciplineapp.presentation.ui.common.ButtonComponent
+import com.honeycomb.disciplineapp.presentation.ui.common.CustomButtonState
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
+import com.honeycomb.disciplineapp.presentation.ui.common.pickDate
+import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import com.honeycomb.disciplineapp.presentation.utils.clickableWithoutRipple
 import com.honeycomb.disciplineapp.presentation.utils.dashedBorder
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
 import kotlinx.coroutines.delay
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
 @Composable
 fun AddHabitScreen(
     navController: NavController,
     habitData: HabitDataDto?,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel = koinViewModel<AddHabitViewModel>()
     var showEvidenceSheet by remember { mutableStateOf(false) }
     val evidenceSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -119,6 +125,7 @@ fun AddHabitScreen(
     LaunchedEffect(evidenceSelection) {
         showEvidenceSheet = evidenceSelection != null
         selectedEvidence = evidencesByType[selectedEvidenceType]
+        selectedEvidence?.let { viewModel.setInitialData(it) }
     }
 
     Box(
@@ -139,7 +146,7 @@ fun AddHabitScreen(
             sheetState = evidenceSheetState,
             onDismissRequest = dismissSheet,
             dragHandle = null,
-            containerColor = BackgroundColor,
+            containerColor = LightestBackgroundColor,
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
             EvidenceSelectionSheet(
@@ -148,6 +155,7 @@ fun AddHabitScreen(
                 onEvidenceSelected = { option ->
                     selectedEvidenceType = option.type
                     selectedEvidence = evidencesByType[option.type]
+                    selectedEvidence?.let { viewModel.setInitialData(it) }
                     dismissSheet()
                 }
             )
@@ -211,7 +219,9 @@ fun AddHabitScreen(
             onOpenDropDown = { field ->
                 activeDropDownField = field
                 showDropDownSheet = true
-            }
+            },
+            navController = navController,
+            viewModel = viewModel
         )
     }
     // Dropdown bottom sheet shared for all DROP_DOWN fields
@@ -226,7 +236,7 @@ fun AddHabitScreen(
                 }
             },
             dragHandle = null,
-            containerColor = BackgroundColor,
+            containerColor = LightestBackgroundColor,
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
         ) {
             DropDownOptionsSheet(
@@ -244,6 +254,10 @@ fun AddHabitScreen(
                         dropDownSheetState.hide()
                         showDropDownSheet = false
                     }
+                    viewModel.setParam(
+                        key = activeDropDownField?.id.orEmpty(),
+                        value = option.id.orEmpty()
+                    )
                 },
                 onClose = {
                     scope.launch {
@@ -258,12 +272,17 @@ fun AddHabitScreen(
 
 @Composable
 private fun HabitContent(
+    viewModel: AddHabitViewModel,
+    navController: NavController,
     habitData: HabitDataDto?,
     evidence: EvidenceDto?,
     modifier: Modifier = Modifier,
     onShowEvidencePicker: () -> Unit,
     onOpenDropDown: (FieldDto) -> Unit,
 ) {
+    val state by viewModel.state.collectAsState()
+    val platformContext = LocalPlatformContext.current
+
     Column(
         modifier = modifier
             .padding(horizontal = 24.dp)
@@ -278,9 +297,38 @@ private fun HabitContent(
             evidence?.fields.orEmpty().forEach { field ->
                 item {
                     when (field.type) {
-                        "INPUT_FIELD" -> InputFieldBlock(field)
-                        "DROP_DOWN" -> DropDownFieldBlock(field, onOpenDropDown)
-                        "SELECTION" -> SelectionFieldBlock(field)
+                        "INPUT_FIELD" -> InputFieldBlock(
+                            field = field,
+                            onValueChange = {
+                                viewModel.setParam(
+                                    key = field.id.orEmpty(),
+                                    value = it
+                                )
+                            }
+                        )
+                        "DROP_DOWN" -> DropDownFieldBlock(
+                            field = field,
+                            onOpenDropDown = {
+                                if (field.id == "time") {
+                                    pickDate(platformContext, onDatePicked = {
+                                        println(it)
+                                    })
+                                } else {
+                                    onOpenDropDown(field)
+                                }
+                            },
+                            viewModel = viewModel
+                        )
+                        "SELECTION" -> SelectionFieldBlock(
+                            viewModel = viewModel,
+                            field = field,
+                            selectedId = {
+                                viewModel.setParam(
+                                    key = field.id.orEmpty(),
+                                    value = it
+                                )
+                            }
+                        )
                         "BOTTOMSHEET" -> BottomSheetFieldBlock(
                             field.bs,
                             onClick = {
@@ -297,12 +345,29 @@ private fun HabitContent(
         }
         // Bottom button
         habitData?.button?.let { btn ->
-            ButtonComponent(
-                button = btn,
-                onClick = { /* TODO: Hook submit later */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+            if (state.habit?.details?.get("name")?.isNotEmpty() == true) {
+                ButtonComponent(
+                    button = btn,
+                    onClick = {
+                        println(viewModel.state.value.habit?.details)
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("habit", Json.encodeToString(state.habit))
+                        navController.popBackStack()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    endIconComposable = {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            tint = WhiteColor,
+                            modifier = Modifier
+                                .size(18.dp)
+                        )
+                    }
+                )
+            }
         }
     }
 }
@@ -360,6 +425,7 @@ fun BottomSheetFieldBlock(
 @Composable
 private fun InputFieldBlock(
     field: FieldDto,
+    onValueChange: (String) -> Unit
 ) {
     val inputMeta = field.inputField ?: return
     var text by remember { mutableStateOf("") }
@@ -395,6 +461,7 @@ private fun InputFieldBlock(
             onValueChange = { new ->
                 if (inputMeta.maxLength == null || new.length <= inputMeta.maxLength) {
                     text = new
+                    onValueChange(text)
                 }
             },
             textStyle = CustomTextStyle.copy(
@@ -407,7 +474,7 @@ private fun InputFieldBlock(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 44.dp)
-                        .background(LightBackgroundColor, shape = RoundedCornerShape(6.dp))
+                        .background(LightestBackgroundColor, shape = RoundedCornerShape(6.dp))
                         .dashedBorder(
                             strokeWidth = 1.dp,
                             color = SubtitleTextColor,
@@ -435,11 +502,15 @@ private fun InputFieldBlock(
 
 @Composable
 private fun DropDownFieldBlock(
+    viewModel: AddHabitViewModel,
     field: FieldDto,
     onOpenDropDown: (FieldDto) -> Unit,
 ) {
+    val state by viewModel.state.collectAsState()
     val dd = field.dropDown ?: return
-    val selected = dd.options?.firstOrNull { it.selected == true }
+    val selected = dd.options?.firstOrNull {
+        it.id == state.habit?.details?.get(field.id)
+    }
 
     Row(
         modifier = Modifier
@@ -461,7 +532,9 @@ private fun DropDownFieldBlock(
             modifier = Modifier
                 .clip(RoundedCornerShape(20.dp))
                 .background(AccentColor2)
-                .clickableWithoutRipple { onOpenDropDown(field) }
+                .clickableWithoutRipple {
+                    onOpenDropDown(field)
+                }
                 .padding(horizontal = 16.dp)
                 .height(35.dp),
             contentAlignment = Alignment.Center
@@ -471,7 +544,7 @@ private fun DropDownFieldBlock(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selected?.title.orEmpty(),
+                    text = selected?.selectedTitle.orEmpty(),
                     style = CustomTextStyle.copy(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 13.sp,
@@ -493,11 +566,20 @@ private fun DropDownFieldBlock(
 
 @Composable
 private fun SelectionFieldBlock(
+    viewModel: AddHabitViewModel,
     field: FieldDto,
+    selectedId: (String) -> Unit
 ) {
     val selection = field.selection ?: return
+    val state by viewModel.state.collectAsState()
     var selectedId by remember(selection) {
-        mutableStateOf(selection.options?.firstOrNull { it.selected == true }?.id)
+        mutableStateOf(selection.options?.firstOrNull {
+            it.id == state.habit?.details?.get(field.id)
+        }?.id)
+    }
+
+    selection.options?.firstOrNull {
+        it.id == state.habit?.details?.get(field.id)
     }
 
     Row(
@@ -529,7 +611,10 @@ private fun SelectionFieldBlock(
                             color = LightBackgroundColor,
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .clickableWithoutRipple { selectedId = opt.id }
+                        .clickableWithoutRipple {
+                            selectedId = opt.id
+                            selectedId(selectedId.orEmpty())
+                        }
                         .padding(horizontal = 22.dp)
                         .height(35.dp),
                     contentAlignment = Alignment.Center

@@ -1,6 +1,7 @@
 package com.honeycomb.disciplineapp.presentation.ui.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.honeycomb.disciplineapp.AccentColor
 import com.honeycomb.disciplineapp.CustomTextStyle
+import com.honeycomb.disciplineapp.LightAccentColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -43,6 +45,7 @@ fun CustomButton(
     modifier: Modifier = Modifier,
     state: CustomButtonState = CustomButtonState.Enabled,
     backgroundColor: Color = AccentColor,
+    borderColor: Color = LightAccentColor,
     onClick: () -> Unit = {},
     startIconComposable: @Composable () -> Unit = {},
     endIconComposable: @Composable () -> Unit = {},
@@ -58,6 +61,11 @@ fun CustomButton(
             }
             .clip(RoundedCornerShape(100.dp))
             .background(backgroundColor)
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(100.dp)
+            )
             .fillMaxWidth()
             .height(50.dp)
             .padding(horizontal = 16.dp),

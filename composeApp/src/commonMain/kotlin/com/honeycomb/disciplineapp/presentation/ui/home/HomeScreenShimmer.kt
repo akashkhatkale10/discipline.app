@@ -20,7 +20,7 @@ fun HomeScreenShimmer(
 ) {
     val cornerRadius = 10
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

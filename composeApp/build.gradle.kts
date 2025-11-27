@@ -16,6 +16,13 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
         }
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.addAll("-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=cl.emilym.kmp.parcelable.Parcelize")
+                }
+            }
+        }
     }
 
     listOf(
@@ -50,6 +57,8 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha12")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+
+            implementation("cl.emilym.kmp:parcelable:0.1.2")
 
             // google
             implementation("io.github.mirzemehdi:kmpauth-google:2.3.1") //Google One Tap Sign-In
