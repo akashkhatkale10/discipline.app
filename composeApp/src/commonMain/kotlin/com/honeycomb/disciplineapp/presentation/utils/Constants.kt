@@ -6,4 +6,5 @@ object Constants {
 
     const val HABIT = "HABIT"
     const val PENALTY = "PENALTY"
+    const val TIME_ANYTIME_ENABLED = "time_anytime_enabled"
 }

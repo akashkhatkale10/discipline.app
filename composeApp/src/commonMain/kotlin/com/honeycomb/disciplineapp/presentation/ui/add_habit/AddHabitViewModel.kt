@@ -3,6 +3,7 @@ package com.honeycomb.disciplineapp.presentation.ui.add_habit
 import androidx.lifecycle.ViewModel
 import com.honeycomb.disciplineapp.data.dto.EvidenceDto
 import com.honeycomb.disciplineapp.data.dto.SetRoutineDto
+import com.honeycomb.disciplineapp.presentation.utils.Constants.TIME_ANYTIME_ENABLED
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -43,6 +44,7 @@ class AddHabitViewModel: ViewModel() {
                 habit = it.habit?.copy(
                     details = it.habit.details.toMutableMap().apply {
                         putAll(s.orEmpty())
+                        put(TIME_ANYTIME_ENABLED, "true")
                     },
                     evidence = SetRoutineDto.SetEvidenceDto(
                         type = selectedEvidence.type.orEmpty()

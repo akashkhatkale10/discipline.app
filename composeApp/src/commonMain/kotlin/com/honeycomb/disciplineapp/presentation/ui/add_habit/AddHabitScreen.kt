@@ -78,18 +78,23 @@ import com.honeycomb.disciplineapp.LightestBackgroundColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.data.dto.BottomSheetValueDto
+import com.honeycomb.disciplineapp.data.dto.TimeSelectionDto
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.EvidenceSelectionSheet
 import com.honeycomb.disciplineapp.presentation.ui.common.BorderIconButton
 import com.honeycomb.disciplineapp.presentation.ui.common.ButtonComponent
+import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButtonState
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
+import com.honeycomb.disciplineapp.presentation.ui.common.DashedCheckBox
 import com.honeycomb.disciplineapp.presentation.ui.common.pickDate
+import com.honeycomb.disciplineapp.presentation.utils.Constants.TIME_ANYTIME_ENABLED
 import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
-import com.honeycomb.disciplineapp.presentation.utils.clickableWithoutRipple
+import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import com.honeycomb.disciplineapp.presentation.utils.dashedBorder
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.koinViewModel
@@ -120,7 +125,9 @@ fun AddHabitScreen(
     // Dropdown state for any DROP_DOWN / SELECTION bottom sheet
     var activeDropDownField by remember { mutableStateOf<FieldDto?>(null) }
     var showDropDownSheet by remember { mutableStateOf(false) }
+    var showTimeDropDownSheet by remember { mutableStateOf(false) }
     val dropDownSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val timeDropDownSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(evidenceSelection) {
         showEvidenceSheet = evidenceSelection != null
@@ -221,11 +228,16 @@ fun AddHabitScreen(
                 showDropDownSheet = true
             },
             navController = navController,
-            viewModel = viewModel
+            viewModel = viewModel,
+            onOpenTimeSelection = { field ->
+                activeDropDownField = field
+                showTimeDropDownSheet = true
+            }
         )
     }
     // Dropdown bottom sheet shared for all DROP_DOWN fields
     val dropDown = activeDropDownField?.dropDown
+    val timeDropDown = activeDropDownField?.timeSelection
     if (showDropDownSheet && dropDown != null) {
         ModalBottomSheet(
             sheetState = dropDownSheetState,
@@ -268,6 +280,56 @@ fun AddHabitScreen(
             )
         }
     }
+
+    if (showTimeDropDownSheet && timeDropDown != null) {
+        ModalBottomSheet(
+            sheetState = timeDropDownSheetState,
+            onDismissRequest = {
+                scope.launch {
+                    timeDropDownSheetState.hide()
+                    showTimeDropDownSheet = false
+                }
+            },
+            dragHandle = null,
+            containerColor = LightestBackgroundColor,
+            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+        ) {
+            TimeDropDownOptionsSheet(
+                dropDown = timeDropDown,
+                onOptionSelected = { option ->
+                    // update in-memory selection flags
+                    scope.launch {
+                        timeDropDownSheetState.hide()
+                        showTimeDropDownSheet = false
+                    }
+                    viewModel.setParam(
+                        key = activeDropDownField?.id.orEmpty(),
+                        value = option.id.orEmpty()
+                    )
+                },
+                onClose = {
+                    scope.launch {
+                        timeDropDownSheetState.hide()
+                        showTimeDropDownSheet = false
+                    }
+                },
+                onClick = { localDateTime, isSelected ->
+                    viewModel.setParam(
+                        key = activeDropDownField?.id.orEmpty(),
+                        value = localDateTime.toString()
+                    )
+                    viewModel.setParam(
+                        key = TIME_ANYTIME_ENABLED,
+                        value = isSelected.toString()
+                    )
+                    scope.launch {
+                        timeDropDownSheetState.hide()
+                        showTimeDropDownSheet = false
+                    }
+                }
+            )
+        }
+    }
 }
 
 @Composable
@@ -279,9 +341,9 @@ private fun HabitContent(
     modifier: Modifier = Modifier,
     onShowEvidencePicker: () -> Unit,
     onOpenDropDown: (FieldDto) -> Unit,
+    onOpenTimeSelection: (FieldDto) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
-    val platformContext = LocalPlatformContext.current
 
     Column(
         modifier = modifier
@@ -309,13 +371,14 @@ private fun HabitContent(
                         "DROP_DOWN" -> DropDownFieldBlock(
                             field = field,
                             onOpenDropDown = {
-                                if (field.id == "time") {
-                                    pickDate(platformContext, onDatePicked = {
-                                        println(it)
-                                    })
-                                } else {
-                                    onOpenDropDown(field)
-                                }
+                                onOpenDropDown(field)
+                            },
+                            viewModel = viewModel
+                        )
+                        "TIME_SELECTION" -> TimeSelectionBlock(
+                            field = field,
+                            onOpenTimeSelection = {
+                                onOpenTimeSelection(field)
                             },
                             viewModel = viewModel
                         )
@@ -530,11 +593,11 @@ private fun DropDownFieldBlock(
 
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(AccentColor2)
-                .clickableWithoutRipple {
+                .bounceClick {
                     onOpenDropDown(field)
                 }
+                .clip(RoundedCornerShape(20.dp))
+                .background(AccentColor2)
                 .padding(horizontal = 16.dp)
                 .height(35.dp),
             contentAlignment = Alignment.Center
@@ -562,6 +625,123 @@ private fun DropDownFieldBlock(
             }
         }
     }
+}
+
+@Composable
+private fun TimeSelectionBlock(
+    viewModel: AddHabitViewModel,
+    field: FieldDto,
+    onOpenTimeSelection: (FieldDto) -> Unit,
+) {
+    val state by viewModel.state.collectAsState()
+    val dd = field.timeSelection ?: return
+    val selectedTitle = state.habit?.details?.get(field.id)
+    val anytime = state.habit?.details?.get(TIME_ANYTIME_ENABLED) ?: true
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = dd.title.orEmpty(),
+            style = CustomTextStyle.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                color = SubtitleTextColor
+            ),
+            modifier = Modifier
+                .weight(1f)
+        )
+
+        Box(
+            modifier = Modifier
+                .bounceClick {
+                    onOpenTimeSelection(field)
+                }
+                .clip(RoundedCornerShape(20.dp))
+                .background(AccentColor2)
+                .padding(horizontal = 16.dp)
+                .height(35.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = getTimeText(selectedTitle, anytime as? Boolean),
+                    style = CustomTextStyle.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp,
+                        color = WhiteColor
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = WhiteColor,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+    }
+}
+
+fun getTimeText(value: String?, anytime: Boolean?): String {
+    if (value != null) {
+        runCatching {
+            val date = LocalDateTime.parse(value)
+            if (anytime ?: false) return "Anytime (${date.formatToReadableDate()})"
+
+            return date.formatToReadableDateTime()
+        }
+    }
+
+    return "Select a date"
+}
+
+fun LocalDateTime.formatToReadableDate(): String {
+    val day = this.dayOfMonth
+    val month = this.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val year = this.year
+
+    val suffix = when {
+        day in 11..13 -> "th"
+        day % 10 == 1 -> "st"
+        day % 10 == 2 -> "nd"
+        day % 10 == 3 -> "rd"
+        else -> "th"
+    }
+
+    return "$day$suffix ${month.take(3)} $year"
+}
+
+fun LocalDateTime.formatToReadableDateTime(): String {
+    val day = this.dayOfMonth
+    val month = this.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val year = this.year
+
+    val suffix = when {
+        day in 11..13 -> "th"
+        day % 10 == 1 -> "st"
+        day % 10 == 2 -> "nd"
+        day % 10 == 3 -> "rd"
+        else -> "th"
+    }
+
+    val hour = this.hour
+    val minute = this.minute.toString().padStart(2, '0')
+    val amPm = if (hour < 12) "AM" else "PM"
+    val hour12 = when {
+        hour == 0 -> 12
+        hour > 12 -> hour - 12
+        else -> hour
+    }
+
+    return "$day$suffix ${month.take(3)} $year  $hour12:$minute $amPm"
 }
 
 @Composable
@@ -611,7 +791,7 @@ private fun SelectionFieldBlock(
                             color = LightBackgroundColor,
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .clickableWithoutRipple {
+                        .bounceClick {
                             selectedId = opt.id
                             selectedId(selectedId.orEmpty())
                         }
@@ -678,7 +858,7 @@ private fun DropDownOptionsSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickableWithoutRipple { onOptionSelected(option) },
+                        .bounceClick { onOptionSelected(option) },
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
@@ -702,5 +882,128 @@ private fun DropDownOptionsSheet(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TimeDropDownOptionsSheet(
+    dropDown: TimeSelectionDto,
+    onOptionSelected: (DropDownOptionDto) -> Unit,
+    onClose: () -> Unit,
+    onClick: (LocalDateTime, Boolean) -> Unit
+) {
+    val platformContext = LocalPlatformContext.current
+    var isChecked by remember { mutableStateOf(false) }
+    var selectedDate: LocalDateTime? by remember { mutableStateOf(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 30.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = dropDown.bsTitle ?: dropDown.title.orEmpty(),
+                    style = CustomTextStyle.copy(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp,
+                        color = WhiteColor
+                    )
+                )
+            }
+
+            CloseChip(
+                onClick = onClose,
+                icon = Icons.Default.Close,
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(50.dp),
+            modifier = Modifier.padding(top = 50.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Select time",
+                    style = CustomTextStyle.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                        color = WhiteColor
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .bounceClick {
+                            pickDate(platformContext, onDatePicked = {
+                                println(it)
+                                selectedDate = it
+                            })
+                        },
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = selectedDate?.formatToReadableDateTime() ?: "Select",
+                        style = CustomTextStyle.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 15.sp,
+                            color = WhiteColor
+                        ),
+                        modifier = Modifier
+                    )
+                    Icon(
+                        Icons.Default.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = WhiteColor
+                    )
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                DashedCheckBox(
+                    isChecked = isChecked,
+                    onCheckedChange = {
+                        isChecked = it
+                    }
+                )
+                Text(
+                    text = "Anytime",
+                    style = CustomTextStyle.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                        color = WhiteColor
+                    ),
+                    modifier = Modifier
+                )
+            }
+        }
+
+
+        CustomButton(
+            text = "Select this date",
+            modifier = Modifier
+                .padding(top = 50.dp),
+            onClick = {
+                selectedDate?.let {
+                    onClick(it, isChecked)
+                }
+            }
+        )
     }
 }

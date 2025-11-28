@@ -89,21 +89,12 @@
                 }
               },
               {
-                "type": "DROP_DOWN",
+                "type": "TIME_SELECTION",
                 "id": "time",
-                "drop_down": {
+                "time_selection": {
                   "title": "Before",
-                  "options": [
-                    {
-                      "title": "Anytime",
-                      "selected": true,
-                      "id": "ONCE"
-                    },
-                    {
-                      "selected": false,
-                      "id": "TIME_PICKER"
-                    }
-                  ]
+                  "bs_title": "Select your habit completing time",
+                  "show_anytime": true
                 }
               },
               {

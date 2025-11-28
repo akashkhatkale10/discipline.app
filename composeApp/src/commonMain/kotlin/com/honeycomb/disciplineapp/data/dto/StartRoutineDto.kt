@@ -60,12 +60,20 @@ data class FieldDto(
     @SerialName("input_field") val inputField: InputFieldDto? = null,
     @SerialName("drop_down") val dropDown: DropDownDto? = null,
     @SerialName("selection") val selection: DropDownDto? = null,
+    @SerialName("time_selection") val timeSelection: TimeSelectionDto? = null,
 )
 
 @Serializable
 data class BottomSheetValueDto(
     @SerialName("title") val title: String? = null,
     @SerialName("selected_value") val selected: String?
+)
+
+@Serializable
+data class TimeSelectionDto(
+    @SerialName("title") val title: String? = null,
+    @SerialName("bs_title") val bsTitle: String? = null,
+    @SerialName("show_anytime") val showAnytime: Boolean? = null,
 )
 
 @Serializable
