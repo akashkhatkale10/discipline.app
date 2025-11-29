@@ -1,12 +1,12 @@
 package com.honeycomb.disciplineapp.presentation.di
 
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitViewModel
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.focus_screen.FocusViewModel
 import com.honeycomb.disciplineapp.presentation.ui.home.HomeViewModel
 import com.honeycomb.disciplineapp.presentation.ui.onboarding.OnboardingViewModel
 import com.honeycomb.disciplineapp.presentation.ui.splash.SplashViewModel
 import com.honeycomb.disciplineapp.presentation.ui.start_routine.StartRoutineViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
-import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val viewModels = module {
@@ -15,6 +15,7 @@ val viewModels = module {
     viewModel { HomeViewModel(get()) }
     viewModel { StartRoutineViewModel(get()) }
     viewModel { AddHabitViewModel() }
+    viewModel { FocusViewModel() }
 }
 
 //val remoteConfigModule = module {

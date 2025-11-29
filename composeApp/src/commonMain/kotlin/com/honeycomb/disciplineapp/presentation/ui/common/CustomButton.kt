@@ -21,11 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.honeycomb.disciplineapp.AccentButtonGradient
+import com.honeycomb.disciplineapp.AccentButtonStrokeGradient
 import com.honeycomb.disciplineapp.AccentColor
 import com.honeycomb.disciplineapp.CustomTextStyle
 import com.honeycomb.disciplineapp.LightAccentColor
@@ -60,21 +63,27 @@ fun CustomButton(
                 onClick()
             }
             .clip(RoundedCornerShape(100.dp))
-            .background(backgroundColor)
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = AccentButtonGradient
+                )
+            )
             .border(
                 width = 2.dp,
-                color = borderColor,
+                brush = Brush.horizontalGradient(
+                    colors = AccentButtonStrokeGradient
+                ),
                 shape = RoundedCornerShape(100.dp)
             )
             .fillMaxWidth()
             .height(50.dp)
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(18.dp)
+                .size(20.dp)
         ) {
             startIconComposable()
         }
@@ -86,15 +95,13 @@ fun CustomButton(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier = Modifier,
             textAlign = TextAlign.Center
         )
 
         Box(
             modifier = Modifier
-                .size(18.dp)
+                .size(20.dp)
         ) {
             if (state == CustomButtonState.Loading) {
                 CircularProgressIndicator(

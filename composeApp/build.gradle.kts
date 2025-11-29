@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.swiftklib)
     id("kotlin-parcelize")
 }
 
@@ -34,12 +35,28 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
+
+        iosTarget.compilations {
+            val main by getting {
+                cinterops {
+                    create("screentime")
+                }
+            }
+        }
     }
+//
+//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+//        compilations["main"].cinterops.create("familycontrols") {
+//            defFile(project.file("src/nativeInterop/cinterop/familycontrols.def"))
+//            packageName("familycontrols") // This becomes your import prefix
+//        }
+//    }
 
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.material)
             implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.13.0"))
 
             implementation ("androidx.credentials:credentials:1.0.0-alpha05")
@@ -123,5 +140,12 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+swiftklib {
+    create("screentime") {
+        path = file("../iosApp/iosApp/screentime")
+        packageName("com.honeycomb.screentime")
+    }
 }
 

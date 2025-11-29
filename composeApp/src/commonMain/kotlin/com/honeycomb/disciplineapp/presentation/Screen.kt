@@ -6,6 +6,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Screen {
+
+    // focus app
+    @Serializable
+    data object FocusAppScreenRoute : Screen()
+
+
+
+
+    // habit
     @Serializable
     data object SplashScreenRoute : Screen()
 

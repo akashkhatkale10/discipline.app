@@ -9,11 +9,14 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,11 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -38,11 +43,64 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.honeycomb.disciplineapp.AccentBackgroundGradient
 import com.honeycomb.disciplineapp.LightBackgroundColor
-import com.honeycomb.disciplineapp.SubtitleTextColor
+import com.honeycomb.disciplineapp.WhiteColor
 import kotlin.math.roundToInt
 
 enum class ButtonState { Pressed, Idle }
+
+fun Modifier.accentBackgroundColor() = this.then(
+    Modifier
+        .background(
+            brush = Brush.verticalGradient(
+                colors = AccentBackgroundGradient
+            )
+        )
+)
+fun Modifier.addStandardTopPadding() = this.then(
+    Modifier
+        .padding(
+            top = 16.dp
+        )
+)
+fun Modifier.addStandardHorizontalPadding() = this.then(
+    Modifier
+        .padding(
+            horizontal = 20.dp
+        )
+)
+fun Modifier.addMediumHeight() = this.then(
+    Modifier
+        .height(44.dp)
+)
+fun Modifier.addBlurBackground() = this.then(
+    Modifier
+        .clip(
+            shape = RoundedCornerShape(14.dp)
+        )
+        .border(
+            width = 1.dp,
+            color = WhiteColor.copy(
+                alpha = 0.1f
+            ),
+            shape = RoundedCornerShape(14.dp)
+        )
+        .graphicsLayer {
+            // Apply blur effect
+            renderEffect = BlurEffect(
+                radiusX = 10f, radiusY = 10f
+            )
+        }
+        .background(
+            color = WhiteColor.copy(
+                alpha = 0.02f
+            ),
+            shape = RoundedCornerShape(14.dp)
+        )
+)
+
+
 fun Modifier.bounceClick(
     scaleDown: Float = 0.96f,
     enabled: Boolean = true,

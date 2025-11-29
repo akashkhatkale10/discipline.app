@@ -20,5 +20,11 @@
         </dict>
     </array>
 
+    <key>NSFamilyControlsUsageDescription</key>
+    <string>We use Screen Time to help you focus.</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>This app needs camera access to capture photos.</string>
+
 </dict>
 </plist>

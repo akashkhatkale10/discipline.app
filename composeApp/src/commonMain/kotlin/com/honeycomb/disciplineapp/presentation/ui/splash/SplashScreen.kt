@@ -43,22 +43,27 @@ fun SplashScreen(
     val state by splashViewModel.state.collectAsState()
 
     LaunchedEffect(state) {
-        if (state.user != null) {
-            navController.navigate(Screen.MainScreenRoute) {
-                popUpTo<Screen.SplashScreenRoute> {
-                    inclusive = true
-                }
-            }
-        } else if (state.onboarding != null) {
-            navController.navigate(Screen.OnboardingScreenRoute(
-                    data = state.onboarding!!
-                )
-            ) {
-                popUpTo<Screen.SplashScreenRoute> {
-                    inclusive = true
-                }
+        navController.navigate(Screen.FocusAppScreenRoute) {
+            popUpTo<Screen.SplashScreenRoute> {
+                inclusive = true
             }
         }
+//        if (state.user != null) {
+//            navController.navigate(Screen.MainScreenRoute) {
+//                popUpTo<Screen.SplashScreenRoute> {
+//                    inclusive = true
+//                }
+//            }
+//        } else if (state.onboarding != null) {
+//            navController.navigate(Screen.OnboardingScreenRoute(
+//                    data = state.onboarding!!
+//                )
+//            ) {
+//                popUpTo<Screen.SplashScreenRoute> {
+//                    inclusive = true
+//                }
+//            }
+//        }
     }
 
     Scaffold(
