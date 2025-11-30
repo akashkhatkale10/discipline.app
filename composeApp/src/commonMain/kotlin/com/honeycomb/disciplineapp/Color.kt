@@ -10,12 +10,30 @@ val AccentButtonStrokeGradient = listOf(
     Color(0xFFE5727F),
     Color(0xFFC74545),
 )
+val AccentSecondaryButtonGradient = listOf(
+    Color(0x02FFFFFF),
+    Color(0x02FFFFFF),
+)
+val AccentSecondaryButtonStrokeGradient = listOf(
+    Color(0x10FFFFFF),
+    Color(0x10FFFFFF),
+)
+val AccentTertiaryButtonGradient = listOf(
+    Color(0xFF1A9597),
+    Color(0xFF0B80E6),
+)
+val AccentTertiaryButtonStrokeGradient = listOf(
+    Color(0xFF52C0C1),
+    Color(0xFF0B80E6),
+)
 val AccentBackgroundGradient = listOf(
     Color(0xFF251011),
     Color(0xFF121212),
     Color(0xFF121212),
 )
 val RedColor = Color(0xFFC74545)
+val BlueColor = Color(0xFF0B80E6)
+val BottomSheetColor = Color(0xFF2A2021)
 
 
 

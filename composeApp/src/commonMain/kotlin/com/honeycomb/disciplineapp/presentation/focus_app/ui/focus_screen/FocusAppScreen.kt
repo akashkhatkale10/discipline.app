@@ -7,16 +7,31 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlurEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -24,9 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.honeycomb.disciplineapp.BackgroundColor
 import com.honeycomb.disciplineapp.CustomTextStyle
+import com.honeycomb.disciplineapp.LightestBackgroundColor
 import com.honeycomb.disciplineapp.RedColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
@@ -35,22 +52,36 @@ import com.honeycomb.disciplineapp.nunitoFontFamily
 import com.honeycomb.disciplineapp.presentation.focus_app.BreakPolicy
 import com.honeycomb.disciplineapp.presentation.focus_app.FocusSessionConfig
 import com.honeycomb.disciplineapp.presentation.focus_app.PlatformScreenTimeManager
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.BlockedAppsBottomSheet
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.getAppCount
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.getAppInfoCount
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.common.BlurButton
+import com.honeycomb.disciplineapp.presentation.ui.add_habit.EvidenceSelectionSheet
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
+import com.honeycomb.disciplineapp.presentation.ui.common.CustomSecondaryButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
 import com.honeycomb.disciplineapp.presentation.utils.DataUtils.getCurrentFormattedDate
 import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.accentBackgroundColor
+import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import com.honeycomb.disciplineapp.presentation.utils.addStandardTopPadding
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
 @Composable
 fun FocusAppScreen(
     navController: NavController,
     modifier: Modifier
 ) {
     val viewModel = koinViewModel<FocusViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var showBlockedAppsSheet by remember { mutableStateOf(false) }
+    val showBlockedAppsSheetState =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = BackgroundColor,
@@ -148,9 +179,10 @@ fun FocusAppScreen(
 
                 BlurButton(
                     modifier = Modifier
-                        .padding(top = 32.dp),
+                        .padding(top = 32.dp)
+                        .addStandardHorizontalPadding(),
                     onClick = {
-
+                        showBlockedAppsSheet = true
                     },
                     content = {
                         Text(
@@ -172,7 +204,7 @@ fun FocusAppScreen(
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            "2 apps",
+                            getAppInfoCount(state.selectedApps),
                             style = CustomTextStyle.copy(
                                 color = RedColor,
                                 fontSize = 12.sp,
@@ -190,7 +222,8 @@ fun FocusAppScreen(
                 )
                 BlurButton(
                     modifier = Modifier
-                        .padding(top = 16.dp),
+                        .padding(top = 16.dp)
+                        .addStandardHorizontalPadding(),
                     onClick = {
 
                     },
@@ -232,7 +265,8 @@ fun FocusAppScreen(
                 )
                 BlurButton(
                     modifier = Modifier
-                        .padding(top = 16.dp),
+                        .padding(top = 16.dp)
+                        .addStandardHorizontalPadding(),
                     onClick = {
 
                     },
@@ -273,19 +307,20 @@ fun FocusAppScreen(
                     .padding(bottom = 50.dp)
             ) {
                 CustomButton(
-                    text = "Start focus session",
+                    text = "start focus session",
                     onClick = {
-                        // viewModel.requestPermission()
-                        controller.startMonitoring(
-                            config = FocusSessionConfig(
-                                penaltyEnabled = false,
-                                breaksAllowed = BreakPolicy.TWO_BREAKS,
-                                durationMinutes = 2,
-                                blockedApps = listOf(
-                                    "com.google.android.youtube"
+                        scope.launch {
+                            controller.startMonitoring(
+                                config = FocusSessionConfig(
+                                    penaltyEnabled = false,
+                                    breaksAllowed = BreakPolicy.TWO_BREAKS,
+                                    durationMinutes = 2,
+                                    blockedApps = state.selectedApps.map {
+                                        it.packageName
+                                    }
                                 )
                             )
-                        )
+                        }
                     },
                     startIconComposable = {
                         Icon(
@@ -293,12 +328,35 @@ fun FocusAppScreen(
                             contentDescription = null,
                             tint = WhiteColor,
                             modifier = Modifier
-                                .fillMaxSize()
+                                .size(24.dp)
                         )
                     }
                 )
             }
         }
 
+        if (showBlockedAppsSheet) {
+            ModalBottomSheet(
+                sheetState = showBlockedAppsSheetState,
+                onDismissRequest = {
+                    showBlockedAppsSheet = false
+                },
+                dragHandle = null,
+                containerColor = Color.Transparent,
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                scrimColor = Color.Black.copy(alpha = 0.4f),
+                modifier = Modifier
+                    .padding(top = it.calculateTopPadding())
+            ) {
+                BlockedAppsBottomSheet(
+                    dismiss = { apps ->
+                        showBlockedAppsSheet = false
+                        if (apps.isNotEmpty()) viewModel.addAppsBlocked(apps)
+                    },
+                    paddingTop = it.calculateTopPadding(),
+                    selectedApps = state.selectedApps
+                )
+            }
+        }
     }
 }

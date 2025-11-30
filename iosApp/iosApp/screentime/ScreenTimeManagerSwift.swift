@@ -8,10 +8,10 @@ import AVFoundation
 @objc public class ScreenTimeManagerSwift: NSObject {
     // private let center = DeviceActivityCenter()
     // private let authCenter = AuthorizationCenter.shared
-
-    private let authorizationCenter = AuthorizationCenter.shared
-    private let store = ManagedSettingsStore()
-    private var activitySession: DeviceActivityMonitor?
+    //
+    // private let authorizationCenter = AuthorizationCenter.shared
+    // private let store = ManagedSettingsStore()
+    // private var activitySession: DeviceActivityMonitor?
 
 
     @objc public func requestPermission(completion: @escaping (Bool) -> Void) {
@@ -31,18 +31,6 @@ import AVFoundation
         //     completion(false) // Permission denied or restricted
         // @unknown default:
         //     completion(false)
-        // }
-        Task {
-            do {
-                try await authorizationCenter.requestAuthorization(for: .individual)
-                let status = authorizationCenter.authorizationStatus
-                print("approved")
-                completion(status == .approved)
-            } catch {
-                print("denied")
-                completion(false)
-            }
-        }
     }
 
     @objc public func startMonitoring() {

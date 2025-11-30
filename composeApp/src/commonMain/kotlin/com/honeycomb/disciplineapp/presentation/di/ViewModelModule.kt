@@ -1,5 +1,7 @@
 package com.honeycomb.disciplineapp.presentation.di
 
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.BlockedAppsBottomSheetViewModel
+import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.InstalledAppsBottomSheetViewModel
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitViewModel
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.focus_screen.FocusViewModel
 import com.honeycomb.disciplineapp.presentation.ui.home.HomeViewModel
@@ -16,6 +18,8 @@ val viewModels = module {
     viewModel { StartRoutineViewModel(get()) }
     viewModel { AddHabitViewModel() }
     viewModel { FocusViewModel() }
+    viewModel { BlockedAppsBottomSheetViewModel() }
+    viewModel { InstalledAppsBottomSheetViewModel() }
 }
 
 //val remoteConfigModule = module {

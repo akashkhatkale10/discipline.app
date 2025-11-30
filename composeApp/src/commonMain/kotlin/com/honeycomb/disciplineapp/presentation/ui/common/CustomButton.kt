@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.sp
 import com.honeycomb.disciplineapp.AccentButtonGradient
 import com.honeycomb.disciplineapp.AccentButtonStrokeGradient
 import com.honeycomb.disciplineapp.AccentColor
+import com.honeycomb.disciplineapp.AccentSecondaryButtonGradient
+import com.honeycomb.disciplineapp.AccentSecondaryButtonStrokeGradient
+import com.honeycomb.disciplineapp.AccentTertiaryButtonGradient
+import com.honeycomb.disciplineapp.AccentTertiaryButtonStrokeGradient
 import com.honeycomb.disciplineapp.CustomTextStyle
 import com.honeycomb.disciplineapp.LightAccentColor
 import com.honeycomb.disciplineapp.WhiteColor
@@ -76,17 +80,12 @@ fun CustomButton(
                 shape = RoundedCornerShape(100.dp)
             )
             .fillMaxWidth()
-            .height(50.dp)
+            .height(46.dp)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-        ) {
-            startIconComposable()
-        }
+        startIconComposable()
 
         Text(
             text = text,
@@ -99,20 +98,145 @@ fun CustomButton(
             textAlign = TextAlign.Center
         )
 
-        Box(
-            modifier = Modifier
-                .size(20.dp)
-        ) {
-            if (state == CustomButtonState.Loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(18.dp),
-                    color = WhiteColor,
-                    strokeWidth = 2.dp
-                )
-            } else {
-                endIconComposable()
+        if (state == CustomButtonState.Loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(18.dp),
+                color = WhiteColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            endIconComposable()
+        }
+    }
+}
+
+@Composable
+fun CustomSecondaryButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    state: CustomButtonState = CustomButtonState.Enabled,
+    backgroundColor: Color = AccentColor,
+    borderColor: Color = LightAccentColor,
+    onClick: () -> Unit = {},
+    startIconComposable: @Composable () -> Unit = {},
+    endIconComposable: @Composable () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .bounceClick(
+                enabled = state == CustomButtonState.Enabled
+            ) {
+                if (state == CustomButtonState.Disabled || state == CustomButtonState.Loading) return@bounceClick
+
+                onClick()
             }
+            .clip(RoundedCornerShape(100.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = AccentSecondaryButtonGradient
+                )
+            )
+            .border(
+                width = 2.dp,
+                brush = Brush.horizontalGradient(
+                    colors = AccentSecondaryButtonStrokeGradient
+                ),
+                shape = RoundedCornerShape(100.dp)
+            )
+            .fillMaxWidth()
+            .height(46.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        startIconComposable()
+
+        Text(
+            text = text,
+            style = CustomTextStyle.copy(
+                color = WhiteColor,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+            ),
+            modifier = Modifier,
+            textAlign = TextAlign.Center
+        )
+
+        if (state == CustomButtonState.Loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(18.dp),
+                color = WhiteColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            endIconComposable()
+        }
+    }
+}
+
+@Composable
+fun CustomTertiaryButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    state: CustomButtonState = CustomButtonState.Enabled,
+    backgroundColor: Color = AccentColor,
+    borderColor: Color = LightAccentColor,
+    onClick: () -> Unit = {},
+    startIconComposable: @Composable () -> Unit = {},
+    endIconComposable: @Composable () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .bounceClick(
+                enabled = state == CustomButtonState.Enabled
+            ) {
+                if (state == CustomButtonState.Disabled || state == CustomButtonState.Loading) return@bounceClick
+
+                onClick()
+            }
+            .clip(RoundedCornerShape(100.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = AccentTertiaryButtonGradient
+                )
+            )
+            .border(
+                width = 2.dp,
+                brush = Brush.horizontalGradient(
+                    colors = AccentTertiaryButtonStrokeGradient
+                ),
+                shape = RoundedCornerShape(100.dp)
+            )
+            .fillMaxWidth()
+            .height(46.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        startIconComposable()
+
+        Text(
+            text = text,
+            style = CustomTextStyle.copy(
+                color = WhiteColor,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+            ),
+            modifier = Modifier,
+            textAlign = TextAlign.Center
+        )
+
+        if (state == CustomButtonState.Loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(18.dp),
+                color = WhiteColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            endIconComposable()
         }
     }
 }

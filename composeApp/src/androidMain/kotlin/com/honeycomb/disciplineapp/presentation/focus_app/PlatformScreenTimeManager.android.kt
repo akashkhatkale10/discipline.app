@@ -57,13 +57,14 @@ actual class PlatformScreenTimeManager {
             val permission = Manifest.permission.FOREGROUND_SERVICE_SPECIAL_USE
 
             if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                Log.d("AKASH_LOG", "showing permissiong")
+                Log.d("AKASH_LOG", "showing permission")
                 ActivityCompat.requestPermissions(activity!!, arrayOf(
                     permission,
                 ), 100)
                 // Result will be received via Activity callback
                 // You’ll need to forward it to KMP
             } else {
+                Log.d("AKASH_LOG", "permission given")
                 onResult(true)
             }
         } else {
@@ -71,21 +72,28 @@ actual class PlatformScreenTimeManager {
         }
     }
 
-    actual fun startMonitoring(config: FocusSessionConfig) {
+    actual suspend fun startMonitoring(config: FocusSessionConfig) {
         // Serialize config to JSON and start a ForegroundService
-        requestForegroundPermission {
-            if (it) {
-                val json = Json.encodeToString(config)
-                val intent = Intent(context, FocusMonitoringService::class.java).apply {
-                    putExtra(FocusMonitoringService.EXTRA_CONFIG_JSON, json)
-                    action = FocusMonitoringService.ACTION_START
-                }
 
-                context.startForegroundService(intent)
-            } else {
-                Log.d("AKASH_LOG", "startMonitoring: denied permission")
-            }
+        config.blockedApps.forEach {
+            BlockedAppsStore
+                .addBlockedApp(it)
         }
+
+//        requestForegroundPermission {
+//            if (it) {
+//                Log.d("AKASH_LOG", "startMonitoring: permission given")
+//                val json = Json.encodeToString(config)
+//                val intent = Intent(context, FocusMonitoringService::class.java).apply {
+//                    putExtra(FocusMonitoringService.EXTRA_CONFIG_JSON, json)
+//                    action = FocusMonitoringService.ACTION_START
+//                }
+//
+//                context.startForegroundService(intent)
+//            } else {
+//                Log.d("AKASH_LOG", "startMonitoring: denied permission")
+//            }
+//        }
 //        val json = Json.encodeToString(config)
 //        val intent = Intent(context, FocusMonitoringService::class.java).apply {
 //            putExtra(FocusMonitoringService.EXTRA_CONFIG_JSON, json)
@@ -93,10 +101,11 @@ actual class PlatformScreenTimeManager {
 //        }
 //
 //        context.startForegroundService(intent)
+
+
     }
 
     actual fun stopMonitoring() {
-        Log.d("AKASH_LOG", "stopMonitoring: called")
         monitoring = false
     }
 

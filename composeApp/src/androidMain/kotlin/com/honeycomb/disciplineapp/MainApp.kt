@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.honeycomb.disciplineapp.data.di.dataModule
 import com.honeycomb.disciplineapp.presentation.di.viewModels
+import com.honeycomb.disciplineapp.presentation.focus_app.BlockedAppsStore
 import org.koin.core.context.startKoin
 
 class MainApp : Application() {
@@ -16,6 +17,8 @@ class MainApp : Application() {
         super.onCreate()
 
         context = this
+
+        BlockedAppsStore.init(this)
 
         startKoin {
             modules(

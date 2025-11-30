@@ -25,7 +25,7 @@ expect class PlatformScreenTimeManager() {
 
     suspend fun requestPermission(): Boolean
 
-    fun startMonitoring(config: FocusSessionConfig)
+    suspend fun startMonitoring(config: FocusSessionConfig)
 
     fun stopMonitoring()
 
