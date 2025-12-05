@@ -19,7 +19,9 @@ import com.honeycomb.disciplineapp.presentation.ui.onboarding.OnboardingScreen
 import com.honeycomb.disciplineapp.presentation.ui.splash.SplashScreen
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitScreen
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.focus_screen.FocusAppScreen
+import com.honeycomb.disciplineapp.presentation.ui.DemoScreen
 import com.honeycomb.disciplineapp.presentation.ui.start_routine.StartRoutineScreen
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.reflect.typeOf
 
@@ -28,11 +30,12 @@ import kotlin.reflect.typeOf
 fun App() {
     DisciplineAppTheme {
         val navController = rememberNavController()
+        val theme = LocalTheme.current
 
         Scaffold {
             NavHost(
                 modifier = Modifier
-                    .background(BackgroundColor)
+                    .background(theme.backgroundColorGradient.first())
                     .padding(it),
                 navController = navController,
                 startDestination = Screen.SplashScreenRoute
@@ -44,8 +47,11 @@ fun App() {
                         modifier = Modifier
                     )
                 }
-
-
+                composable<Screen.DemoScreenRoute> {
+                    DemoScreen(
+                        navController = navController
+                    )
+                }
 
 
 

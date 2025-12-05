@@ -39,7 +39,7 @@ kotlin {
         iosTarget.compilations {
             val main by getting {
                 cinterops {
-                    create("screentime")
+                    create("appblocker")
                 }
             }
         }
@@ -145,9 +145,9 @@ dependencies {
 }
 
 swiftklib {
-    create("screentime") {
-        path = file("../iosApp/iosApp/screentime")
-        packageName("com.honeycomb.screentime")
+    create("appblocker") {
+        path = file("../iosApp/iosApp/appblocker")
+        packageName("com.honeycomb.appblocker")
     }
 }
 

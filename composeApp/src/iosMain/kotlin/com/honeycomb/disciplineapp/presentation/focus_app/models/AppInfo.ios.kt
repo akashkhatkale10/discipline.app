@@ -11,6 +11,6 @@ actual suspend fun getInstalledApps(
 
 actual class AppIcon
 
-actual fun AppIcon.toPainter(): Painter {
-
+actual fun AppIcon.toPainter(): Painter? {
+    return null
 }

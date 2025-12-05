@@ -1,15 +1,19 @@
 package com.honeycomb.disciplineapp.presentation.focus_app.ui.focus_screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,9 +53,8 @@ import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.nunitoFontFamily
-import com.honeycomb.disciplineapp.presentation.focus_app.BreakPolicy
-import com.honeycomb.disciplineapp.presentation.focus_app.FocusSessionConfig
-import com.honeycomb.disciplineapp.presentation.focus_app.PlatformScreenTimeManager
+import com.honeycomb.disciplineapp.presentation.Screen
+import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.BlockedAppsBottomSheet
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.getAppCount
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.blocked_apps.getAppInfoCount
@@ -139,9 +142,6 @@ fun FocusAppScreen(
     ) {
 
         val context = LocalPlatformContext.current
-        val controller = remember { PlatformScreenTimeManager().apply {
-            setup(context)
-        } }
 
         Box(
             modifier = modifier
@@ -304,23 +304,63 @@ fun FocusAppScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 20.dp)
-                    .padding(bottom = 50.dp)
+                    .padding(bottom = 50.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 30.dp)
+                ) {
+                    BlurButton(
+                        content = {
+                            Box(modifier = Modifier
+                                .width(16.dp).height(2.dp).background(WhiteColor))
+                        },
+                        modifier = Modifier
+                            .weight(0.15f),
+                        alignment = Alignment.CenterHorizontally
+                    )
+                    BlurButton(
+                        content = {
+                            Text(
+                                text = "30 mins",
+                                style = CustomTextStyle.copy(
+                                    color = WhiteColor,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(0.7f),
+                        alignment = Alignment.CenterHorizontally
+                    )
+                    BlurButton(
+                        content = {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = WhiteColor
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(0.15f),
+                        alignment = Alignment.CenterHorizontally
+                    )
+                }
+
                 CustomButton(
                     text = "start focus session",
                     onClick = {
                         scope.launch {
-                            controller.startMonitoring(
-                                config = FocusSessionConfig(
-                                    penaltyEnabled = false,
-                                    breaksAllowed = BreakPolicy.TWO_BREAKS,
-                                    durationMinutes = 2,
-                                    blockedApps = state.selectedApps.map {
-                                        it.packageName
-                                    }
-                                )
-                            )
+                            val a = AppBlocker()
+                            a.requestPermission()
                         }
+//                        navController
+//                            .navigate(Screen.DemoScreenRoute)
                     },
                     startIconComposable = {
                         Icon(

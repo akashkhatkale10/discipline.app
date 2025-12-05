@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class ButtonDto(
     @SerialName("type") val type: String?,
     @SerialName("title") val title: String?,
+    @SerialName("action") val action: String?,
 ) {
 
     enum class ButtonType {

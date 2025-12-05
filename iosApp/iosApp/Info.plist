@@ -26,5 +26,11 @@
     <key>NSCameraUsageDescription</key>
     <string>This app needs camera access to capture photos.</string>
 
+    <key>DeviceActivityReportExtensionCategories</key>
+    <array>
+        <string>daily</string>
+        <string>weekly</string>
+    </array>
+
 </dict>
 </plist>

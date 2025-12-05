@@ -1,4 +1,4 @@
-package com.honeycomb.disciplineapp.presentation.focus_app
+package com.honeycomb.disciplineapp.presentation.focus_app.data_store
 
 import android.annotation.SuppressLint
 import android.content.Context

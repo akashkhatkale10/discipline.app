@@ -2,6 +2,7 @@ import SwiftUI
 import ComposeApp
 import Firebase
 import GoogleSignIn
+import DeviceActivity
 
 @main
 struct iOSApp: App {

@@ -20,7 +20,7 @@ expect suspend fun getInstalledApps(
     includeSystemApps: Boolean = false
 ): List<AppInfo>
 
-expect fun AppIcon.toPainter(): Painter
+expect fun AppIcon.toPainter(): Painter?
 
 sealed class AppCategory(
     val title: String,

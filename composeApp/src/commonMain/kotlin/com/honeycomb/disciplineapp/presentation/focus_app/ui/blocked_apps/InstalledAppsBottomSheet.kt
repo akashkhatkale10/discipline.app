@@ -177,7 +177,7 @@ fun InstalledAppsBottomSheet(
                                     SelectedBlurButton(
                                         content = {
                                             Image(
-                                                painter = item.app.icon.toPainter(),
+                                                painter = item.app.icon.toPainter()!!,
                                                 contentDescription = null,
                                                 modifier = Modifier.size(20.dp)
                                             )
@@ -205,7 +205,7 @@ fun InstalledAppsBottomSheet(
                                     BlurButton(
                                         content = {
                                             Image(
-                                                painter = item.app.icon.toPainter(),
+                                                painter = item.app.icon.toPainter()!!,
                                                 contentDescription = null,
                                                 modifier = Modifier.size(20.dp)
                                             )
@@ -445,7 +445,7 @@ fun InstalledAppsBottomSheet(
                                                 SelectedBlurButton(
                                                     content = {
                                                         Image(
-                                                            painter = item.app.icon.toPainter(),
+                                                            painter = item.app.icon.toPainter()!!,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp)
                                                         )
@@ -473,7 +473,7 @@ fun InstalledAppsBottomSheet(
                                                 BlurButton(
                                                     content = {
                                                         Image(
-                                                            painter = item.app.icon.toPainter(),
+                                                            painter = item.app.icon.toPainter()!!,
                                                             contentDescription = null,
                                                             modifier = Modifier.size(20.dp)
                                                         )

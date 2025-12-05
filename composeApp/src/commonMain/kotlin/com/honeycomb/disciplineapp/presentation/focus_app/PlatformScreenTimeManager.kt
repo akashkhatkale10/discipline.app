@@ -16,18 +16,3 @@ enum class BreakPolicy {
     TWO_BREAKS,
     NO_BREAKS
 }
-
-expect class PlatformScreenTimeManager() {
-
-    fun setup(activity: Any?)
-
-    fun isSupported(): Boolean
-
-    suspend fun requestPermission(): Boolean
-
-    suspend fun startMonitoring(config: FocusSessionConfig)
-
-    fun stopMonitoring()
-
-    fun isMonitoringActive(): Boolean
-}

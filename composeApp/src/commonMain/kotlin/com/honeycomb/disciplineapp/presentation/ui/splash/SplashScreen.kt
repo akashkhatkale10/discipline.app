@@ -27,6 +27,7 @@ import com.honeycomb.disciplineapp.CustomTextStyle
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.presentation.Screen
+import com.honeycomb.disciplineapp.presentation.ui.Theme
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
 import com.honeycomb.disciplineapp.presentation.ui.home.ActionTitleSubtitle
@@ -43,31 +44,33 @@ fun SplashScreen(
     val state by splashViewModel.state.collectAsState()
 
     LaunchedEffect(state) {
-        navController.navigate(Screen.FocusAppScreenRoute) {
-            popUpTo<Screen.SplashScreenRoute> {
-                inclusive = true
-            }
-        }
 //        if (state.user != null) {
-//            navController.navigate(Screen.MainScreenRoute) {
-//                popUpTo<Screen.SplashScreenRoute> {
-//                    inclusive = true
-//                }
-//            }
-//        } else if (state.onboarding != null) {
-//            navController.navigate(Screen.OnboardingScreenRoute(
-//                    data = state.onboarding!!
-//                )
-//            ) {
+//            navController.navigate(Screen.OnboardingScreenRoute) {
 //                popUpTo<Screen.SplashScreenRoute> {
 //                    inclusive = true
 //                }
 //            }
 //        }
+        if (state.user != null) {
+            navController.navigate(Screen.MainScreenRoute) {
+                popUpTo<Screen.SplashScreenRoute> {
+                    inclusive = true
+                }
+            }
+        } else if (state.onboarding != null) {
+            navController.navigate(Screen.OnboardingScreenRoute(
+                    data = state.onboarding!!
+                )
+            ) {
+                popUpTo<Screen.SplashScreenRoute> {
+                    inclusive = true
+                }
+            }
+        }
     }
 
     Scaffold(
-        containerColor = BackgroundColor,
+        containerColor = Theme.getTheme().backgroundColorGradient.first(),
         modifier = Modifier
             .fillMaxSize(),
     ) {

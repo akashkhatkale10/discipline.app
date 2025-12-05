@@ -11,27 +11,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.initialize
 import com.google.firebase.Firebase
-import com.honeycomb.disciplineapp.presentation.focus_app.PlatformScreenTimeManager
+import com.honeycomb.disciplineapp.presentation.ui.AppTheme
+import com.honeycomb.disciplineapp.presentation.ui.Theme
 import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        screenTimeController = PlatformScreenTimeManager()
 
 
         Firebase.initialize(this)
         setContent {
             val activityContext = LocalContext.current
-            CompositionLocalProvider(LocalPlatformContext provides activityContext) {
+            CompositionLocalProvider(
+                LocalTheme provides Theme.getTheme(),
+                LocalPlatformContext provides activityContext
+            ) {
                 App()
             }
         }
     }
-
-    private lateinit var screenTimeController: PlatformScreenTimeManager
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -45,8 +47,6 @@ class MainActivity : ComponentActivity() {
             val granted = grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
 
-            // Send result back to KMP
-            screenTimeController.onPermissionResult(granted)
         }
     }
 }

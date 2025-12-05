@@ -167,7 +167,7 @@ fun BlockedAppsBottomSheet(
                                 BlurButton(
                                     content = {
                                         Image(
-                                            painter = item.icon.toPainter(),
+                                            painter = item.icon.toPainter()!!,
                                             contentDescription = null,
                                             modifier = Modifier.size(20.dp)
                                         )

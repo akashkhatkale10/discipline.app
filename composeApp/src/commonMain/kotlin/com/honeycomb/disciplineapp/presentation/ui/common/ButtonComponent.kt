@@ -18,6 +18,7 @@ fun ButtonComponent(
     when (type) {
         ButtonDto.ButtonType.PRIMARY_BUTTON -> {
             CustomButton(
+                type = type,
                 modifier = modifier,
                 text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,
@@ -30,6 +31,7 @@ fun ButtonComponent(
         }
         ButtonDto.ButtonType.SECONDARY_BUTTON -> {
             CustomButton(
+                type = type,
                 modifier = modifier,
                 text = button?.title.orEmpty(),
                 endIconComposable = endIconComposable,

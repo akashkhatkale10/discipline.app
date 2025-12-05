@@ -11,7 +11,7 @@ class OnboardingRepositoryImpl(
 ): OnboardingRepository {
     override suspend fun getOnboarding(): Result<OnboardingDto> {
         try {
-            val result = functions.httpsCallable("onboarding").invoke()
+            val result = functions.httpsCallable("onboardingV2").invoke()
             return Result.success(result.data<OnboardingDto>())
         } catch (e: Exception) {
             return Result.failure(e)

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.honeycomb.disciplineapp.BlueColor
+import com.honeycomb.disciplineapp.RedColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.presentation.utils.addBlurBackground
 import com.honeycomb.disciplineapp.presentation.utils.addMediumHeight
@@ -34,7 +35,8 @@ import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 fun BlurButton(
     content: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    alignment: Alignment.Horizontal? = null
 ) {
     Box(
         modifier = modifier
@@ -50,10 +52,12 @@ fun BlurButton(
         )
         Row(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(horizontal = 12.dp)
                 .align(Alignment.CenterStart),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = if (alignment != null)
+                Arrangement.spacedBy(10.dp, alignment) else  Arrangement.spacedBy(10.dp)
         ) {
             content()
         }
@@ -81,7 +85,7 @@ fun SelectedBlurButton(
                 )
                 .border(
                     width = 1.dp,
-                    color = BlueColor.copy(
+                    color = RedColor.copy(
                         alpha = 0.3f
                     ),
                     shape = RoundedCornerShape(14.dp)
@@ -93,7 +97,7 @@ fun SelectedBlurButton(
                     )
                 }
                 .background(
-                    color = BlueColor.copy(
+                    color = RedColor.copy(
                         alpha = 0.1f
                     ),
                     shape = RoundedCornerShape(14.dp)

@@ -11,7 +11,8 @@ sealed class Screen {
     @Serializable
     data object FocusAppScreenRoute : Screen()
 
-
+    @Serializable
+    data object DemoScreenRoute : Screen()
 
 
     // habit

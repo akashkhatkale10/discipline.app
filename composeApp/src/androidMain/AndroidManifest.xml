@@ -16,7 +16,7 @@
         android:name=".MainApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Lockdown"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
@@ -24,6 +24,17 @@
             android:name=".FocusMonitoringService"
             android:exported="false"
             android:foregroundServiceType="specialUse" >
+        </service>
+
+        <service
+            android:name=".presentation.focus_app.data_store.AppBlockingService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="systemExempted" />
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="systemExempted" />
+
         </service>
 
         <service

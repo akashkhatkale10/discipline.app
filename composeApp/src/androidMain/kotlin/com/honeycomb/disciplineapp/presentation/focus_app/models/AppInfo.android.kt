@@ -57,7 +57,7 @@ fun AppIcon.toImageBitmap(): ImageBitmap {
     return drawable.toBitmap().asImageBitmap()
 }
 
-actual fun AppIcon.toPainter(): Painter {
+actual fun AppIcon.toPainter(): Painter? {
     return androidx.compose.ui.graphics.painter.BitmapPainter(drawable.toBitmap().asImageBitmap())
 }
 

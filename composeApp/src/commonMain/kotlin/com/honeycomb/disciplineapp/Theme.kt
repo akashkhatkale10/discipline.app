@@ -7,6 +7,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import disciplineapp.composeapp.generated.resources.Res
+import disciplineapp.composeapp.generated.resources.montserrat_bold
+import disciplineapp.composeapp.generated.resources.montserrat_extraBold
+import disciplineapp.composeapp.generated.resources.montserrat_light
+import disciplineapp.composeapp.generated.resources.montserrat_medium
+import disciplineapp.composeapp.generated.resources.montserrat_regular
+import disciplineapp.composeapp.generated.resources.montserrat_semiBold
 import disciplineapp.composeapp.generated.resources.nunito_bold
 import disciplineapp.composeapp.generated.resources.nunito_extrabold
 import disciplineapp.composeapp.generated.resources.nunito_extralight
@@ -18,12 +24,12 @@ import org.jetbrains.compose.resources.Font
 
 val nunitoFontFamily
     @Composable get() = FontFamily(
-        Font(Res.font.nunito_extralight, FontWeight.ExtraLight),
-        Font(Res.font.nunito_regular, FontWeight.Normal),
-        Font(Res.font.nunito_medium, FontWeight.Medium),
-        Font(Res.font.nunito_semibold, FontWeight.SemiBold),
-        Font(Res.font.nunito_bold, FontWeight.Bold),
-        Font(Res.font.nunito_extrabold, FontWeight.ExtraBold)
+        Font(Res.font.montserrat_light, FontWeight.Light),
+        Font(Res.font.montserrat_regular, FontWeight.Normal),
+        Font(Res.font.montserrat_medium, FontWeight.Medium),
+        Font(Res.font.montserrat_semiBold, FontWeight.SemiBold),
+        Font(Res.font.montserrat_bold, FontWeight.Bold),
+        Font(Res.font.montserrat_extraBold, FontWeight.ExtraBold)
     )
 
 val CustomTextStyle

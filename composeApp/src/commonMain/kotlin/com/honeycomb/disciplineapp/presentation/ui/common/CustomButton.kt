@@ -37,6 +37,9 @@ import com.honeycomb.disciplineapp.AccentTertiaryButtonStrokeGradient
 import com.honeycomb.disciplineapp.CustomTextStyle
 import com.honeycomb.disciplineapp.LightAccentColor
 import com.honeycomb.disciplineapp.WhiteColor
+import com.honeycomb.disciplineapp.data.dto.ButtonDto
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
+import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,6 +51,7 @@ sealed class CustomButtonState {
 
 @Composable
 fun CustomButton(
+    type: ButtonDto.ButtonType = ButtonDto.ButtonType.PRIMARY_BUTTON,
     text: String,
     modifier: Modifier = Modifier,
     state: CustomButtonState = CustomButtonState.Enabled,
@@ -57,6 +61,7 @@ fun CustomButton(
     startIconComposable: @Composable () -> Unit = {},
     endIconComposable: @Composable () -> Unit = {},
 ) {
+    val theme = LocalTheme.current
     Row(
         modifier = modifier
             .bounceClick(
@@ -67,21 +72,36 @@ fun CustomButton(
                 onClick()
             }
             .clip(RoundedCornerShape(100.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = AccentButtonGradient
-                )
-            )
-            .border(
-                width = 2.dp,
-                brush = Brush.horizontalGradient(
-                    colors = AccentButtonStrokeGradient
-                ),
-                shape = RoundedCornerShape(100.dp)
+            .then(
+                if (type == ButtonDto.ButtonType.PRIMARY_BUTTON) {
+                    Modifier
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = theme.primaryButtonColorGradient
+                            )
+                        )
+                        .border(
+                            width = 2.dp,
+                            brush = Brush.horizontalGradient(
+                                colors = theme.primaryButtonStrokeColorGradient
+                            ),
+                            shape = RoundedCornerShape(100.dp)
+                        )
+                } else {
+                    Modifier
+                        .background(
+                            color = theme.secondaryButtonColor
+                        )
+                        .border(
+                            width = 2.dp,
+                            color = theme.secondaryButtonStrokeColor,
+                            shape = RoundedCornerShape(100.dp)
+                        )
+                }
             )
             .fillMaxWidth()
-            .height(46.dp)
-            .padding(horizontal = 16.dp),
+            .height(50.dp)
+            .addStandardHorizontalPadding(),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -91,7 +111,7 @@ fun CustomButton(
             text = text,
             style = CustomTextStyle.copy(
                 color = WhiteColor,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
             ),
             modifier = Modifier,
@@ -239,18 +259,4 @@ fun CustomTertiaryButton(
             endIconComposable()
         }
     }
-}
-
-@Composable
-@Preview
-fun CustomButtonPreview(modifier: Modifier = Modifier) {
-    CustomButton(
-        text = "Continue",
-        endIconComposable = {
-            Icon(
-                Icons.Default.ArrowForward,
-                contentDescription = null
-            )
-        }
-    )
 }

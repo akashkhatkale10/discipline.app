@@ -67,7 +67,7 @@ fun Modifier.addStandardTopPadding() = this.then(
 fun Modifier.addStandardHorizontalPadding() = this.then(
     Modifier
         .padding(
-            horizontal = 20.dp
+            horizontal = 16.dp
         )
 )
 fun Modifier.addMediumHeight() = this.then(
