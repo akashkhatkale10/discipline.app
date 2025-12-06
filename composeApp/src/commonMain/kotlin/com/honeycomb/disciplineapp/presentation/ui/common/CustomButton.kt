@@ -60,6 +60,7 @@ fun CustomButton(
     onClick: () -> Unit = {},
     startIconComposable: @Composable () -> Unit = {},
     endIconComposable: @Composable () -> Unit = {},
+    textColor: Color = WhiteColor
 ) {
     val theme = LocalTheme.current
     Row(
@@ -73,30 +74,44 @@ fun CustomButton(
             }
             .clip(RoundedCornerShape(100.dp))
             .then(
-                if (type == ButtonDto.ButtonType.PRIMARY_BUTTON) {
-                    Modifier
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = theme.primaryButtonColorGradient
+                when (type) {
+                    ButtonDto.ButtonType.PRIMARY_BUTTON -> {
+                        Modifier
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = theme.primaryButtonColorGradient
+                                )
                             )
-                        )
-                        .border(
-                            width = 2.dp,
-                            brush = Brush.horizontalGradient(
-                                colors = theme.primaryButtonStrokeColorGradient
-                            ),
-                            shape = RoundedCornerShape(100.dp)
-                        )
-                } else {
-                    Modifier
-                        .background(
-                            color = theme.secondaryButtonColor
-                        )
-                        .border(
-                            width = 2.dp,
-                            color = theme.secondaryButtonStrokeColor,
-                            shape = RoundedCornerShape(100.dp)
-                        )
+                            .border(
+                                width = 2.dp,
+                                brush = Brush.horizontalGradient(
+                                    colors = theme.primaryButtonStrokeColorGradient
+                                ),
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    }
+                    ButtonDto.ButtonType.SECONDARY_BUTTON -> {
+                        Modifier
+                            .background(
+                                color = theme.secondaryButtonColor
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = theme.secondaryButtonStrokeColor,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    }
+                    else -> {
+                        Modifier
+                            .background(
+                                color = backgroundColor
+                            )
+                            .border(
+                                width = 2.dp,
+                                color = borderColor,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    }
                 }
             )
             .fillMaxWidth()
@@ -110,7 +125,7 @@ fun CustomButton(
         Text(
             text = text,
             style = CustomTextStyle.copy(
-                color = WhiteColor,
+                color = textColor,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
             ),

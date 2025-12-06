@@ -290,7 +290,7 @@ fun ActionTitleSubtitle(
             style = CustomTextStyle.copy(
                 color = SubtitleTextColor,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             ),
             modifier = Modifier
                 .padding(top = 14.dp),

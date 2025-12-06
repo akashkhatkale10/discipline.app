@@ -6,3 +6,7 @@ import androidx.compose.ui.Modifier
 @Composable
 actual fun NativeScreen(modifier: Modifier) {
 }
+
+@Composable
+actual fun OnboardingUsageScreen(modifier: Modifier) {
+}

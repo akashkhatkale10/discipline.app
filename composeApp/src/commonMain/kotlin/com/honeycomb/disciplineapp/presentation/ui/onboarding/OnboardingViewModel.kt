@@ -7,6 +7,7 @@ import com.honeycomb.disciplineapp.domain.repository.LoginRepository
 import com.honeycomb.disciplineapp.presentation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,12 @@ class OnboardingViewModel(
 
     private val _loginState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+
+
+    private val _analysingState: MutableStateFlow<OnboardingAnalysingState> = MutableStateFlow(OnboardingAnalysingState(
+        points = listOf()
+    ))
+    val analysingState: StateFlow<OnboardingAnalysingState> = _analysingState.asStateFlow()
 
     fun loginUser(
         signInResult: UserData?,
@@ -43,6 +50,53 @@ class OnboardingViewModel(
         }
     }
 
+
+    fun startAnalysing() = viewModelScope.launch {
+        val startDelay = 1000L
+        val completeDelay = 1000L
+        val points = listOf(
+            "analysing your phone usage...",
+            "identifying distractions...",
+            "generating report....",
+            "finalizing insights",
+            "all done",
+        )
+
+        points.forEachIndexed { index, it ->
+            delay(startDelay)
+            val point = OnboardingAnalysingState.OnboardingAnalysingItem(
+                title = it,
+                completed = false
+            )
+            _analysingState.update { state ->
+                state.copy(
+                    points = state.points.toMutableList().apply {
+                        add(point)
+                    }
+                )
+            }
+            if (index != points.lastIndex) delay(completeDelay + index * 300L)
+            _analysingState.update { state ->
+                state.copy(
+                    points = state.points.toMutableList().apply {
+                        this[state.points.lastIndex] = point.copy(completed = true)
+                    },
+                    completed = index == points.lastIndex
+                )
+            }
+//            if (index == points.lastIndex) delay(1500)
+        }
+    }
+}
+
+data class OnboardingAnalysingState(
+    val points: List<OnboardingAnalysingItem>,
+    val completed: Boolean = false
+) {
+    data class OnboardingAnalysingItem(
+        val title: String,
+        val completed: Boolean
+    )
 }
 
 data class LoginState(

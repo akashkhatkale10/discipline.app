@@ -11,7 +11,7 @@ data class ButtonDto(
 ) {
 
     enum class ButtonType {
-        PRIMARY_BUTTON, SECONDARY_BUTTON,
+        PRIMARY_BUTTON, SECONDARY_BUTTON, TERTIARY_BUTTON,
         PRIMARY_SMALL_BUTTON, SECONDARY_SMALL_BUTTON, NONE;
 
         companion object {

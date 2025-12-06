@@ -7,3 +7,9 @@ import androidx.compose.ui.Modifier
 expect fun NativeScreen(
     modifier: Modifier
 )
+
+
+@Composable
+expect fun OnboardingUsageScreen(
+    modifier: Modifier
+)

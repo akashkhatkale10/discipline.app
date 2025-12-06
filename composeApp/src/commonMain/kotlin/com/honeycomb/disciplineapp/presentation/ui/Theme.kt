@@ -17,6 +17,7 @@ class AppTheme(
     val secondaryButtonColor: Color,
     val secondaryButtonStrokeColor: Color,
     val subtitleColor: Color,
+    val titleColor: Color,
     val tertiaryColor: Color,
     val quaternaryColor: Color
 )
@@ -40,6 +41,7 @@ val blackTheme = AppTheme(
     secondaryButtonColor = Color(0x02FFFFFF),
     secondaryButtonStrokeColor = Color(0x10FFFFFF),
 
+    titleColor = Color(0xFFFFFFFF),
     subtitleColor = Color(0x02FFFFFF),
     tertiaryColor = Color(0x10FFFFFF),
     quaternaryColor = Color(0x30FFFFFF),
@@ -66,5 +68,6 @@ val redTheme = AppTheme(
 
     subtitleColor = Color(0x02FFFFFF),
     tertiaryColor = Color(0x10FFFFFF),
+    titleColor = Color(0xFFFFFFFF),
     quaternaryColor = Color(0x30FFFFFF),
 )

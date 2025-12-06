@@ -8,7 +8,9 @@ import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +29,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,6 +40,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -55,7 +61,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +79,8 @@ import androidx.navigation.NavController
 import com.honeycomb.disciplineapp.BackgroundColor
 import com.honeycomb.disciplineapp.BlueColor
 import com.honeycomb.disciplineapp.CustomTextStyle
+import com.honeycomb.disciplineapp.GreenColor
+import com.honeycomb.disciplineapp.GreenSecondaryColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TertiaryColor
 import com.honeycomb.disciplineapp.TitleTextColor
@@ -81,6 +92,9 @@ import com.honeycomb.disciplineapp.data.dto.UserData
 import com.honeycomb.disciplineapp.nunitoFontFamily
 import com.honeycomb.disciplineapp.presentation.Screen
 import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
+import com.honeycomb.disciplineapp.presentation.focus_app.OnboardingUsageScreen
+import com.honeycomb.disciplineapp.presentation.focus_app.utils.getScreenHeight
+import com.honeycomb.disciplineapp.presentation.focus_app.utils.getScreenWidth
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.ButtonComponent
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
@@ -92,12 +106,19 @@ import com.honeycomb.disciplineapp.presentation.utils.addBlurBackground
 import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
+import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import disciplineapp.composeapp.generated.resources.Res
+import disciplineapp.composeapp.generated.resources.apple
 import disciplineapp.composeapp.generated.resources.facebook
 import disciplineapp.composeapp.generated.resources.gmail
+import disciplineapp.composeapp.generated.resources.google
 import disciplineapp.composeapp.generated.resources.instagram
+import disciplineapp.composeapp.generated.resources.onboarding1
+import disciplineapp.composeapp.generated.resources.onboarding2
+import disciplineapp.composeapp.generated.resources.onboarding3
+import disciplineapp.composeapp.generated.resources.onboarding4
 import disciplineapp.composeapp.generated.resources.permission
 import disciplineapp.composeapp.generated.resources.snapchat
 import disciplineapp.composeapp.generated.resources.youtube
@@ -105,14 +126,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
-
+import org.koin.core.annotation.KoinExperimentalAPI
 
 enum class OnboardingPages {
-    FIRST, SECOND
+    FIRST, SECOND, THIRD, FOUR
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, KoinExperimentalAPI::class)
 @Composable
 fun OnboardingScreen(
     navController: NavController,
@@ -200,8 +222,14 @@ fun OnboardingScreen(
                 AnimatedContent(
                     targetState = currentPage.value,
                     transitionSpec = {
-                        fadeIn(animationSpec = tween(1000)) with
-                                fadeOut(animationSpec = tween(100))
+                        slideInHorizontally(
+                            initialOffsetX = { 1000 },
+                            animationSpec = tween(500)
+                        ) with
+                                slideOutHorizontally(
+                                    targetOffsetX = { -1000 },
+                                    animationSpec = tween(100)
+                                )
                     }
                 ) {
                     when (it) {
@@ -216,81 +244,381 @@ fun OnboardingScreen(
                         OnboardingPages.SECOND -> {
                             OnboardingSecondScreen(
                                 modifier = Modifier,
+                                viewModel = viewModel,
+                                onCompleted = {
+                                    currentPage.value = OnboardingPages.THIRD
+                                }
+                            )
+                        }
+                        OnboardingPages.THIRD -> {
+                            OnboardingThirdScreen(
+                                modifier = Modifier,
+                                viewModel = viewModel,
+                                onClick = {
+                                    currentPage.value = OnboardingPages.FOUR
+                                }
+                            )
+                        }
+                        OnboardingPages.FOUR -> {
+                            OnboardingFourthScreen(
+                                modifier = Modifier,
+                                viewModel = viewModel,
+                                isAuthReady = authReady
                             )
                         }
                     }
                 }
-
-
-//                data.login?.title.let {
-//                    StyleText(
-//                        modifier = Modifier
-//                            .padding(top = 50.dp)
-//                            .addStandardHorizontalPadding(),
-//                        style = it,
-//                        textAlign = TextAlign.Center,
-//                        lineHeight = 50,
-//                    )
-//                }
-//                data.login?.subTitle.let {
-//                    StyleText(
-//                        modifier = Modifier
-//                            .padding(top = 16.dp)
-//                            .padding(horizontal = 30.dp),
-//                        style = it,
-//                        textAlign = TextAlign.Center,
-//                        lineHeight = 30,
-//                    )
-//                }
-//                Spacer(
-//                    modifier = Modifier
-//                        .weight(1f)
-//                )
-//                Column(
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    verticalArrangement = Arrangement.spacedBy(16.dp)
-//                ) {
-//                    data.login?.footer.let {
-//                        StyleText(
-//                            modifier = Modifier
-//                                .padding(horizontal = 30.dp),
-//                            style = it,
-//                            textAlign = TextAlign.Center,
-//                            lineHeight = 30,
-//                        )
-//                    }
-//                    data.login?.firstButtons?.forEach {
-//                        val startIcon: @Composable () -> Unit = {
-//                            if (it.action == "next") {
-//                                Icon(
-//                                    Icons.Default.ArrowForward,
-//                                    contentDescription = null,
-//                                    tint = WhiteColor
-//                                )
-//                            }
-//                        }
-//                        ButtonComponent(
-//                            button = it,
-//                            onClick = {
-//
-//                            },
-//                            endIconComposable = {
-//                                startIcon()
-//                            },
-//                            modifier = Modifier
-//                                .addStandardHorizontalPadding()
-//                        )
-//                    }
-//                }
             }
         }
     }
 }
 
 @Composable
-fun OnboardingSecondScreen(
-    modifier: Modifier.Companion
+fun OnboardingFourthScreen(
+    isAuthReady: Boolean,
+    modifier: Modifier.Companion,
+    viewModel: OnboardingViewModel
 ) {
+    val pagerState = rememberPagerState(pageCount = { 4 })
+
+    val pagerItems = listOf(
+        PagerItemData(
+            title = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("configure your focus session")
+                }
+            },
+            image = Res.drawable.onboarding1,
+        ),
+        PagerItemData(
+            title = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("\uD83D\uDED1   all apps")
+                }
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append(" will be blocked during your session")
+                }
+            },
+            image = Res.drawable.onboarding2,
+        ),
+        PagerItemData(
+            title = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("❌   no breaks")
+                }
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append(" allowed, only complete focus")
+                }
+            },
+            image = Res.drawable.onboarding3,
+        ),
+        PagerItemData(
+            title = buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("❌   no way to ")
+                }
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("unblock or distract ")
+                }
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor,
+                        fontFamily = nunitoFontFamily
+                    )
+                ) {
+                    append("from your focus")
+                }
+            },
+            image = Res.drawable.onboarding4,
+        )
+    )
+
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        StyleText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp)
+                .addStandardHorizontalPadding(),
+            style = listOf(
+                StyleText(
+                    text = "how this app will help you",
+                    fontWeight = "regular",
+                    fontSize = 20,
+                    color = "#ffffff"
+                ),
+                StyleText(
+                    text = "\nregain focus",
+                    fontWeight = "bold",
+                    fontSize = 26,
+                    color = "#ffffff"
+                )
+            ),
+            textAlign = TextAlign.Center,
+            lineHeight = 50,
+        )
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(top = 30.dp)
+        ) { page ->
+            PagerItemContent(
+                item = pagerItems[page],
+                modifier = Modifier
+                    .fillMaxSize()
+                    .addStandardHorizontalPadding()
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(vertical = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(4) { index ->
+                val isSelected = pagerState.currentPage == index
+                Box(
+                    modifier = Modifier
+                        .size(if (isSelected) 24.dp else 8.dp, 8.dp)
+                        .background(
+                            color = if (isSelected) WhiteColor else WhiteColor.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                )
+            }
+        }
+
+        if (isAuthReady) {
+            GoogleButtonUiContainerFirebase(
+                modifier = Modifier,
+                onResult = {
+                    if (it.isSuccess) {
+                        val user = it.getOrNull()
+                        viewModel.loginUser(
+                            signInResult = UserData(
+                                userId = user?.uid.orEmpty(),
+                                personalDetails = UserData.PersonalDetails(
+                                    name = user?.displayName.orEmpty(),
+                                    profilePictureUrl = user?.photoURL.orEmpty(),
+                                    email = user?.email.orEmpty()
+                                )
+                            )
+                        )
+                    } else if (it.isFailure) {
+                        // show toast
+                    }
+                }
+            ) {
+                CustomButton(
+                    type = ButtonDto.ButtonType.PRIMARY_BUTTON,
+                    text = "sign in with google",
+                    onClick = {
+                        this.onClick()
+                    },
+                    startIconComposable = {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .background(WhiteColor, CircleShape)
+                                .padding(4.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(Res.drawable.google),
+                                contentDescription = null,
+                                modifier = Modifier
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .addStandardHorizontalPadding()
+                        .padding(bottom = 20.dp)
+                )
+            }
+        }
+        CustomButton(
+            type = ButtonDto.ButtonType.TERTIARY_BUTTON,
+            backgroundColor = WhiteColor,
+            borderColor = WhiteColor,
+            text = "continue with apple",
+            textColor = Color(0xFF121212),
+            onClick = {
+                // Handle button click
+            },
+            startIconComposable = {
+                Image(
+                    painter = painterResource(Res.drawable.apple),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp),
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .addStandardHorizontalPadding()
+                .padding(bottom = 20.dp)
+        )
+    }
+}
+
+data class PagerItemData(
+    val title: AnnotatedString,
+    val image: DrawableResource,
+)
+
+@Composable
+fun PagerItemContent(
+    item: PagerItemData,
+    modifier: Modifier = Modifier,
+) {
+    val theme = LocalTheme.current
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            modifier = Modifier
+                .background(theme.secondaryButtonColor, shape = RoundedCornerShape(14.dp))
+                .border(
+                    width = 1.dp,
+                    color = theme.tertiaryColor,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = item.title,
+                modifier = Modifier.weight(1f),
+                style = CustomTextStyle.copy(
+                    fontSize = 12.sp,
+                    color = theme.titleColor,
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Image(
+            painter = painterResource(item.image),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 30.dp)
+        )
+    }
+}
+
+@Composable
+fun OnboardingThirdScreen(
+    viewModel: OnboardingViewModel,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val width = getScreenWidth()
+    val height = getScreenHeight() - 60.dp
+    LaunchedEffect(Unit) {
+        delay(500)
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        OnboardingUsageScreen(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .width(width)
+                .weight(1f)
+        )
+
+        CustomButton(
+            type = ButtonDto.ButtonType.PRIMARY_BUTTON,
+            text = "regain focus",
+            onClick = {
+                onClick()
+            },
+            endIconComposable = {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    tint = WhiteColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .addStandardHorizontalPadding()
+        )
+    }
+}
+
+@Composable
+fun OnboardingSecondScreen(
+    viewModel: OnboardingViewModel,
+    onCompleted: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val state by viewModel.analysingState.collectAsStateWithLifecycle()
     var isVisible by remember { mutableStateOf(false) }
     val titleOpacity by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
@@ -300,10 +628,19 @@ fun OnboardingSecondScreen(
     LaunchedEffect(Unit) {
         delay(500)
         isVisible = true
+        viewModel.startAnalysing()
+    }
+
+    LaunchedEffect(state) {
+        if (state.completed) {
+            delay(1500)
+            onCompleted()
+        }
     }
 
     Column(
         modifier = modifier
+            .addStandardHorizontalPadding()
     ) {
         StyleText(
             modifier = Modifier
@@ -330,6 +667,65 @@ fun OnboardingSecondScreen(
             textAlign = TextAlign.Center,
             lineHeight = 50,
         )
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .padding(top = 30.dp)
+        ) {
+            state.points.forEach {
+                OnboardingAnalysingItem(
+                    item = it,
+                    modifier = Modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun OnboardingAnalysingItem(
+    item: OnboardingAnalysingState.OnboardingAnalysingItem,
+    modifier: Modifier
+) {
+    val theme = LocalTheme.current
+    val bgColor = if (item.completed) GreenSecondaryColor else theme.subtitleColor
+    val borderColor = if (item.completed) GreenColor else theme.tertiaryColor
+    val hapticFeedback = LocalHapticFeedback.current
+
+    LaunchedEffect(item.completed) {
+        if (item.completed) hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+
+    Row(
+        modifier = modifier
+            .background(bgColor, shape = RoundedCornerShape(14.dp))
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(14.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = item.title,
+            modifier = Modifier.weight(1f),
+            style = CustomTextStyle.copy(
+                fontSize = 12.sp,
+                color = theme.titleColor,
+                fontWeight = FontWeight.Medium
+            )
+        )
+        if (item.completed) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = GreenColor,
+                modifier = Modifier
+                    .size(14.dp)
+            )
+        }
     }
 }
 
@@ -562,146 +958,6 @@ fun OnboardingFirstScreen(
                         )
                     }
                 }
-
-
-//                Box(
-//                    modifier = Modifier
-//                        .padding(top = 50.dp)
-//                        .fillMaxWidth()
-//                        .addStandardHorizontalPadding(),
-//                ) {
-//                    var startAnim by remember {
-//                        mutableStateOf(false)
-//                    }
-//                    val haptic = LocalHapticFeedback.current
-//                    LaunchedEffect(Unit) {
-//                        delay(2000)
-//                        startAnim = true
-//                    }
-//
-//                    repeat(4) {
-//                        val offset by animateIntOffsetAsState(
-//                            targetValue = if (startAnim) {
-//                                IntOffset(0, 0)
-//                            } else {
-//                                IntOffset(0, 2000)
-//                            },
-//                            label = "offset",
-//                            animationSpec = tween(
-//                                durationMillis = upTime,
-//                                delayMillis = it * 250
-//                            ),
-//                            finishedListener = {
-//                                haptic.performHapticFeedback(hapticFeedbackType = HapticFeedbackType.Companion.LongPress)
-//                            }
-//                        )
-//                        OnboardingNotification(
-//                            title = "Instagram",
-//                            icon = Res.drawable.instagram,
-//                            modifier = Modifier
-//                                .offset {
-//                                    offset
-//                                }
-//                                .padding(top = (it * 30).dp)
-//                                .fillMaxWidth()
-//                        )
-//                    }
-//                }
-//
-//                Box(
-//                    modifier = Modifier
-//                        .padding(top = 20.dp)
-//                        .fillMaxWidth()
-//                        .addStandardHorizontalPadding(),
-//                ) {
-//                    var startAnim by remember {
-//                        mutableStateOf(false)
-//                    }
-//                    val haptic = LocalHapticFeedback.current
-//                    LaunchedEffect(Unit) {
-//                        delay(3000)
-//                        startAnim = true
-//                    }
-//
-//                    repeat(2) {
-//                        val offset by animateIntOffsetAsState(
-//                            targetValue = if (startAnim) {
-//                                IntOffset(0, 0)
-//                            } else {
-//                                IntOffset(0, 2000)
-//                            },
-//                            label = "offset",
-//                            animationSpec = tween(
-//                                durationMillis = upTime,
-//                                delayMillis = it * 250
-//                            ),
-//                            finishedListener = {
-//                                haptic.performHapticFeedback(hapticFeedbackType = HapticFeedbackType.Companion.LongPress)
-//                            }
-//                        )
-//                        OnboardingNotification(
-//                            title = "Gmail",
-//                            icon = Res.drawable.gmail,
-//                            modifier = Modifier
-//                                .offset {
-//                                    offset
-//                                }
-//                                .padding(top = (it * 30).dp)
-//                                .fillMaxWidth()
-//                        )
-//                    }
-//                }
-//
-//                Box(
-//                    modifier = Modifier
-//                        .padding(top = 20.dp)
-//                        .fillMaxWidth()
-//                        .addStandardHorizontalPadding(),
-//                ) {
-//                    var startAnim by remember {
-//                        mutableStateOf(false)
-//                    }
-//                    val haptic = LocalHapticFeedback.current
-//                    LaunchedEffect(Unit) {
-//                        delay(3500)
-//                        startAnim = true
-//                    }
-//
-//                    repeat(3) { index ->
-//                        val offset by animateIntOffsetAsState(
-//                            targetValue = if (startAnim) {
-//                                IntOffset(0, 0)
-//                            } else {
-//                                IntOffset(0, 2000)
-//                            },
-//                            label = "offset",
-//                            animationSpec = tween(
-//                                durationMillis = upTime,
-//                                delayMillis = index * 250
-//                            ),
-//                            finishedListener = {
-//                                haptic.performHapticFeedback(hapticFeedbackType = HapticFeedbackType.Companion.LongPress)
-//
-//                                scope.launch {
-//                                    delay(1000)
-//                                    if (index == 2) {
-//                                        upAnimEnded = true
-//                                    }
-//                                }
-//                            }
-//                        )
-//                        OnboardingNotification(
-//                            title = "Youtube",
-//                            icon = Res.drawable.youtube,
-//                            modifier = Modifier
-//                                .offset {
-//                                    offset
-//                                }
-//                                .padding(top = (index * 30).dp)
-//                                .fillMaxWidth()
-//                        )
-//                    }
-//                }
             }
         }
     }

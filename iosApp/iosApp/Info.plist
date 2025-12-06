@@ -2,35 +2,38 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>montserrat_extraBold.ttf</string>
+		<string>montserrat_semiBold.ttf</string>
+		<string>montserrat_regular.ttf</string>
+		<string>montserrat_light.ttf</string>
+		<string>montserrat_medium.ttf</string>
+		<string>montserrat_bold.ttf</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-
-    <key>GIDServerClientID</key>
-    <string>1015502528236-56fd6ig469qluu5n47u9ehekoamvh9hu.apps.googleusercontent.com</string>
-
-    <key>GIDClientID</key>
-    <string>1015502528236-73ac92hdr3011ssib8jvji990d37j526.apps.googleusercontent.com</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.1015502528236-73ac92hdr3011ssib8jvji990d37j526</string>
-            </array>
-        </dict>
-    </array>
-
-    <key>NSFamilyControlsUsageDescription</key>
-    <string>We use Screen Time to help you focus.</string>
-
-    <key>NSCameraUsageDescription</key>
-    <string>This app needs camera access to capture photos.</string>
-
-    <key>DeviceActivityReportExtensionCategories</key>
-    <array>
-        <string>daily</string>
-        <string>weekly</string>
-    </array>
-
+	<key>GIDServerClientID</key>
+	<string>1015502528236-56fd6ig469qluu5n47u9ehekoamvh9hu.apps.googleusercontent.com</string>
+	<key>GIDClientID</key>
+	<string>1015502528236-73ac92hdr3011ssib8jvji990d37j526.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1015502528236-73ac92hdr3011ssib8jvji990d37j526</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSFamilyControlsUsageDescription</key>
+	<string>We use Screen Time to help you focus.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to capture photos.</string>
+	<key>DeviceActivityReportExtensionCategories</key>
+	<array>
+		<string>daily</string>
+		<string>weekly</string>
+	</array>
 </dict>
 </plist>

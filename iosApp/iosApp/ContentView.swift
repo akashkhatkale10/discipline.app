@@ -17,33 +17,10 @@ struct ComposeView: UIViewControllerRepresentable {
 }
 
 struct ContentView: View {
-    let filter: DeviceActivityFilter
-    
-    init() {
-        let calendar = Calendar.current
-        let now = Date()
-        let startOfDay = calendar.startOfDay(for: now)
-        self.filter = DeviceActivityFilter(
-//            segment: .daily(during: DateInterval(
-//                start: Calendar.current.date(byAdding: .day, value: -7, to: Date())!,
-//                end: Date()
-//            )),
-            segment: .daily(
-                during: DateInterval(
-                    start: startOfDay,
-                    end: now
-                )
-            ),
-            users: .all,
-            devices: .all
-        )
-        
-        
-    }
-    
     var body: some View {
-        ComposeView()
-            .ignoresSafeArea()
+       ComposeView()
+           .ignoresSafeArea()
+
         
 //        NavigationView {
 //            VStack {
@@ -76,6 +53,31 @@ struct ContentView: View {
 }
 
 class IOSNativeViewFactory: NativeViewFactory {
+    func createOnboardingUsageScreen() -> UIViewController {
+        let calendar = Calendar.current
+        let now = Date()
+        let sevenDaysAgo = calendar.date(
+            byAdding: .day,
+            value: -7,
+            to: calendar.startOfDay(for: now)
+        )!
+
+        // End = now
+        let interval = DateInterval(start: sevenDaysAgo, end: now)
+
+        // Filter for LAST 7 DAYS
+        let filter = DeviceActivityFilter(
+            segment: .daily(during: interval),
+            users: .all,
+            devices: .init([.iPhone])
+        )
+        let report = DeviceActivityReport(
+            DeviceActivityReport.Context.socialMediaGuilt,
+            filter: filter
+        ).frame(maxWidth: .infinity, maxHeight: .infinity)
+        return UIHostingController(rootView: report)
+    }
+    
     static var shared = IOSNativeViewFactory()
     func createNativeScreen() -> UIViewController {
         let calendar = Calendar.current
@@ -98,5 +100,7 @@ class IOSNativeViewFactory: NativeViewFactory {
         return UIHostingController(rootView: report)
     }
 }
+
+
 
 

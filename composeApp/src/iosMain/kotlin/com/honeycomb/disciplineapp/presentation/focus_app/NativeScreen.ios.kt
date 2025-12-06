@@ -19,4 +19,18 @@ actual fun NativeScreen(modifier: Modifier) {
 
 interface NativeViewFactory {
     fun createNativeScreen(): UIViewController
+    fun createOnboardingUsageScreen(): UIViewController
+}
+
+@Composable
+actual fun OnboardingUsageScreen(
+    modifier: Modifier
+) {
+    val factory = LocalNativeViewFactory.current
+    UIKitViewController(
+        modifier = modifier,
+        factory = {
+            factory.createOnboardingUsageScreen()
+        }
+    )
 }

@@ -31,6 +31,8 @@ val AccentBackgroundGradient = listOf(
     Color(0xFF121212),
     Color(0xFF121212),
 )
+val GreenColor = Color(0xFF339D52)
+val GreenSecondaryColor = Color(0x30339D52)
 val RedColor = Color(0xFFC74545)
 val BlueColor = Color(0xFF0B80E6)
 val BottomSheetColor = Color(0xFF2A2021)

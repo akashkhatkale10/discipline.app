@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>montserrat_extraBold.ttf</string>
+		<string>montserrat_semiBold.ttf</string>
+		<string>montserrat_regular.ttf</string>
+		<string>montserrat_light.ttf</string>
+		<string>montserrat_medium.ttf</string>
+		<string>montserrat_bold.ttf</string>
+	</array>
 	<key>EXAppExtensionAttributes</key>
 	<dict>
 		<key>EXExtensionPointIdentifier</key>
