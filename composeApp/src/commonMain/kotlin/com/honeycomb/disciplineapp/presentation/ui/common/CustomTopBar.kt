@@ -10,15 +10,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.honeycomb.disciplineapp.BackgroundColor
 import com.honeycomb.disciplineapp.LightBackgroundColor
+import com.honeycomb.disciplineapp.presentation.ui.Theme
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 
 @Composable
 fun CustomTopBar(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = BackgroundColor,
+    backgroundColors: List<Color> = LocalTheme.current.backgroundColorGradient,
     midComposable: @Composable () -> Unit = {},
     startComposable: @Composable () -> Unit = {},
     endComposable: @Composable () -> Unit = {},
@@ -26,7 +29,12 @@ fun CustomTopBar(
 ) {
     Column(
         modifier = Modifier
-            .background(backgroundColor)
+            .background(
+                brush = Brush
+                    .verticalGradient(
+                        colors = backgroundColors
+                    )
+            )
     ) {
         Box(
             modifier = modifier

@@ -20,6 +20,7 @@ import com.honeycomb.disciplineapp.presentation.ui.splash.SplashScreen
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.AddHabitScreen
 import com.honeycomb.disciplineapp.presentation.focus_app.ui.focus_screen.FocusAppScreen
 import com.honeycomb.disciplineapp.presentation.ui.DemoScreen
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.CreateFocusScreen
 import com.honeycomb.disciplineapp.presentation.ui.start_routine.StartRoutineScreen
 import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -49,6 +50,11 @@ fun App() {
                 }
                 composable<Screen.DemoScreenRoute> {
                     DemoScreen(
+                        navController = navController
+                    )
+                }
+                composable<Screen.CreateFocusScreenRoute> {
+                    CreateFocusScreen(
                         navController = navController
                     )
                 }

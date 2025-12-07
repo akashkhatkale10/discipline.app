@@ -188,7 +188,6 @@ fun OnboardingScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CustomTopBar(
-                    backgroundColor = Color.Transparent,
                     modifier = Modifier
                         .addStandardHorizontalPadding(),
                     midComposable = {

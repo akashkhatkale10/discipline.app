@@ -10,6 +10,8 @@ sealed class Screen {
     // focus app
     @Serializable
     data object FocusAppScreenRoute : Screen()
+    @Serializable
+    data object CreateFocusScreenRoute : Screen()
 
     @Serializable
     data object DemoScreenRoute : Screen()

@@ -11,8 +11,6 @@ data class AppInfo(
     val name: String,
     val packageName: String,
     val icon: AppIcon,
-    val category: AppCategory,
-    val isSystemApp: Boolean = false
 )
 
 expect suspend fun getInstalledApps(
@@ -20,7 +18,7 @@ expect suspend fun getInstalledApps(
     includeSystemApps: Boolean = false
 ): List<AppInfo>
 
-expect fun AppIcon.toPainter(): Painter?
+expect fun AppIcon.toPainter(): ImageBitmap?
 
 sealed class AppCategory(
     val title: String,

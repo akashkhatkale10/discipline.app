@@ -2,6 +2,7 @@ package com.honeycomb.disciplineapp.presentation.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.honeycomb.disciplineapp.data.dto.FocusDto
 import com.honeycomb.disciplineapp.data.dto.HomeDto
 import com.honeycomb.disciplineapp.domain.repository.HomeRepository
 import com.honeycomb.disciplineapp.presentation.ui.splash.SplashState
@@ -22,11 +23,11 @@ class HomeViewModel(
         _state.update {
             it.copy(isLoading = true)
         }
-        homeRepository.getHome().onSuccess { home ->
+        homeRepository.getHome().onSuccess { focus ->
             _state.update {
                 it.copy(
                     isLoading = false,
-                    data = home,
+                    data = focus,
                     error = null
                 )
             }
@@ -46,5 +47,5 @@ class HomeViewModel(
 data class HomeState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val data: HomeDto? = null
+    val data: List<FocusDto>? = null
 )

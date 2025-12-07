@@ -741,7 +741,7 @@ fun LocalDateTime.formatToReadableDateTime(): String {
         else -> hour
     }
 
-    return "$day$suffix ${month.take(3)} $year  $hour12:$minute $amPm"
+    return "$day$suffix ${month.take(3)} $hour12:$minute $amPm"
 }
 
 @Composable
@@ -886,7 +886,7 @@ private fun DropDownOptionsSheet(
 }
 
 @Composable
-private fun TimeDropDownOptionsSheet(
+fun TimeDropDownOptionsSheet(
     dropDown: TimeSelectionDto,
     onOptionSelected: (DropDownOptionDto) -> Unit,
     onClose: () -> Unit,

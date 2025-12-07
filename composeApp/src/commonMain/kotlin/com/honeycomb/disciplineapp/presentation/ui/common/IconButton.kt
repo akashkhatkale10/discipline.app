@@ -12,19 +12,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.honeycomb.disciplineapp.SubtitleTextColor
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 
 @Composable
 fun BorderIconButton(
     modifier: Modifier = Modifier,
     iconComposable: @Composable () -> Unit
 ) {
+    val theme = LocalTheme.current
     Box(
         modifier = modifier
-            .size(30.dp)
+            .size(34.dp)
             .clip(CircleShape)
             .border(
                 width = 1.dp,
-                color = SubtitleTextColor,
+                color = theme.tertiaryColor,
+                shape = CircleShape
+            )
+            .background(
+                color = theme.secondaryButtonColor,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center

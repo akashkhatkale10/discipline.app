@@ -38,7 +38,7 @@ val blackTheme = AppTheme(
         Color(0xFFC74545),
     ),
 
-    secondaryButtonColor = Color(0x02FFFFFF),
+    secondaryButtonColor = Color(0x05FFFFFF),
     secondaryButtonStrokeColor = Color(0x10FFFFFF),
 
     titleColor = Color(0xFFFFFFFF),

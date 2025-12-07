@@ -53,14 +53,9 @@ actual suspend fun getInstalledApps(
 
 actual class AppIcon internal constructor(val drawable: Drawable)
 
-fun AppIcon.toImageBitmap(): ImageBitmap {
+actual fun AppIcon.toPainter(): ImageBitmap? {
     return drawable.toBitmap().asImageBitmap()
 }
-
-actual fun AppIcon.toPainter(): Painter? {
-    return androidx.compose.ui.graphics.painter.BitmapPainter(drawable.toBitmap().asImageBitmap())
-}
-
 private fun Int.toAppCategory(): AppCategory = when (this) {
     CATEGORY_AUDIO -> AppCategory.AUDIO
     CATEGORY_GAME -> AppCategory.GAMES

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -39,11 +42,13 @@ import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.nunitoFontFamily
 import com.honeycomb.disciplineapp.presentation.Screen
+import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
 import com.honeycomb.disciplineapp.presentation.utils.Constants.HORIZONTAL_PADDING
 import com.honeycomb.disciplineapp.presentation.utils.DataUtils.getCurrentFormattedDate
+import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -55,6 +60,7 @@ fun HomeScreen(
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val a = AppBlocker()
 
     LaunchedEffect(Unit) {
         viewModel.getHomeData()
@@ -123,71 +129,53 @@ fun HomeScreen(
             }
 
             state.data != null -> {
-                if (state.data?.habits != null && state.data?.habits?.isNotEmpty() == true) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
 
-                } else {
-                    val addNewScreen = state.data?.addNewScreen
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                    ) {
-                        TitleSubtitleAction(
-                            title = addNewScreen?.title.orEmpty(),
-                            subtitle = addNewScreen?.subtitle.orEmpty(),
-                            titleFontSize = 18,
-                            titleFontWeight = FontWeight.ExtraBold,
-                            action = {
-                                CustomButton(
-                                    text = addNewScreen?.buttonTitle.orEmpty(),
-                                    endIconComposable = {
-                                        Icon(
-                                            Icons.Default.ArrowForward,
-                                            contentDescription = null,
-                                            tint = WhiteColor
-                                        )
-                                    },
-                                    onClick = {
-                                        navController.navigate(
-                                            Screen.StartRoutineScreenRoute
-                                        )
-                                    }
-                                )
-                            },
+                    if (state.data!!.isNotEmpty()) {
+
+                    } else {
+                        LazyColumn(
                             modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(horizontal = 20.dp)
-                        )
-
-                        if (isExpanded.not()) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(bottom = 50.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .bounceClick {
-                                        onExpandClick()
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            item {
+                                TitleSubtitleAction(
+                                    title = "start your first focus session",
+                                    subtitle = "let's create your customised focus session",
+                                    modifier = Modifier.addStandardHorizontalPadding(),
+                                    action = {
+                                        CustomButton(
+                                            text = "create your focus session",
+                                            endIconComposable = {
+                                                Icon(
+                                                    Icons.Default.ArrowForward,
+                                                    contentDescription = null,
+                                                    tint = WhiteColor
+                                                )
+                                            },
+                                            onClick = {
+                                                navController
+                                                    .navigate(Screen.CreateFocusScreenRoute)
+//                                            a.startBlocking(
+//                                                context = null,
+//                                                packageNames = listOf("com.example.app"),
+//                                                durationMinutes = 60,
+//                                                onFinished = {}
+//                                            )
+                                            }
+                                        )
                                     }
-                            ) {
-                                Text(
-                                    "See more",
-                                    style = CustomTextStyle.copy(
-                                        color = SubtitleTextColor,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold
-                                    ),
-                                    modifier = Modifier
-                                )
-
-                                Icon(
-                                    Icons.Default.KeyboardArrowDown,
-                                    tint = SubtitleTextColor,
-                                    contentDescription = null
                                 )
                             }
                         }
                     }
+
                 }
+
             }
         }
 
@@ -235,7 +223,7 @@ fun TitleSubtitleAction(
             style = CustomTextStyle.copy(
                 color = SubtitleTextColor,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             ),
             modifier = Modifier
                 .padding(top = 14.dp),

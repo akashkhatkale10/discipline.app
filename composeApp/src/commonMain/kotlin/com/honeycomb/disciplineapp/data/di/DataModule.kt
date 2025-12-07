@@ -29,7 +29,7 @@ val dataModule = module {
         LoginRepositoryImpl(get(), get())
     }
     factory <HomeRepository> {
-        HomeRepositoryImpl(get())
+        HomeRepositoryImpl(get(), get(), get())
     }
     factory <StartRoutineRepository> {
         StartRoutineRepositoryImpl(get())

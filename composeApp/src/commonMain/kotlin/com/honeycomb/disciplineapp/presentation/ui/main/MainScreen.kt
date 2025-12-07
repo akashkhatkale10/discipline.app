@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,6 +49,7 @@ import com.honeycomb.disciplineapp.presentation.ui.home.HomeScreen
 import com.honeycomb.disciplineapp.presentation.ui.leaderboard.LeaderboardScreen
 import com.honeycomb.disciplineapp.presentation.ui.main.MainUtils.menuItems
 import com.honeycomb.disciplineapp.presentation.ui.settings.SettingsScreen
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import org.jetbrains.compose.resources.vectorResource
 
@@ -56,6 +58,7 @@ fun MainScreen(
     navController: NavController,
     modifier: Modifier,
 ) {
+    val theme = LocalTheme.current
     var isBottomBarVisible by remember {
         mutableStateOf(false)
     }
@@ -65,11 +68,10 @@ fun MainScreen(
     val mainNavHost = rememberNavController()
 
     Scaffold(
-        containerColor = BackgroundColor,
+        containerColor = theme.backgroundColorGradient.first(),
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            if (isBottomBarVisible) {
                 BottomAppBar(
                     containerColor = Color.Transparent,
                     modifier = Modifier
@@ -97,11 +99,11 @@ fun MainScreen(
                         }
                     }
                 }
-            }
         }
     ) {
         Box(
             modifier = modifier
+                .padding(bottom = 100.dp)
                 .fillMaxSize()
         ) {
             val graph =
@@ -132,7 +134,11 @@ fun MainScreen(
                 graph = graph,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(BackgroundColor)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            theme.backgroundColorGradient
+                        )
+                    )
             )
         }
     }
