@@ -13,3 +13,9 @@ expect fun NativeScreen(
 expect fun OnboardingUsageScreen(
     modifier: Modifier
 )
+
+@Composable
+expect fun SelectedAppsIconView(
+    tokens: List<String>,
+    modifier: Modifier
+)

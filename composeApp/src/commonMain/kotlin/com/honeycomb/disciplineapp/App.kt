@@ -37,7 +37,7 @@ fun App() {
             NavHost(
                 modifier = Modifier
                     .background(theme.backgroundColorGradient.first())
-                    .padding(it),
+                    .padding(top = it.calculateTopPadding() ),
                 navController = navController,
                 startDestination = Screen.SplashScreenRoute
             ) {

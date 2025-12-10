@@ -49,15 +49,15 @@ class InstalledAppsBottomSheetViewModel: ViewModel() {
         category: AppCategory,
         select: Boolean
     ) = viewModelScope.launch {
-        _state.value = _state.value.copy(
-            installedApp = _state.value.installedApp.map {
-                if (it.app.category == category) {
-                    it.copy(isSelected = select)
-                } else {
-                    it
-                }
-            }
-        )
+//        _state.value = _state.value.copy(
+//            installedApp = _state.value.installedApp.map {
+//                if (it.app.category == category) {
+//                    it.copy(isSelected = select)
+//                } else {
+//                    it
+//                }
+//            }
+//        )
     }
 
 }

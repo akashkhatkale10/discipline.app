@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.honeycomb.disciplineapp.presentation.focus_app.data_store.AppBlockingService
+import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
 
 actual class AppBlocker {
     actual fun startBlocking(
@@ -29,5 +30,8 @@ actual class AppBlocker {
     actual fun isBlocking(): Boolean = AppBlockingService.isRunning
     actual fun requestPermission(onSuccess: () -> Unit, onFailure: () -> Unit) {
         onSuccess()
+    }
+
+    actual fun selectApps(exclude: Boolean, onAppsSelected: (List<AppInfo>) -> Unit) {
     }
 }

@@ -21,38 +21,25 @@ struct ContentView: View {
        ComposeView()
            .ignoresSafeArea()
 
-        
-//        NavigationView {
-//            VStack {
-//                DeviceActivityReport(
-//                    DeviceActivityReport.Context.socialMediaGuilt,
-//                    filter: filter
-//                )
-//                .onAppear(perform: {
-//                    let shared = UserDefaults.standard
-//                    print("appeared defaults here: ", shared.integer(forKey: "demo"))
-//                })
-//                .background(Color.black)
-//            }
-//            .navigationTitle("Your Doom Awaits")
-//        }.task {
-//            print("ios: requestPermission")
-//            Task {
-//                do {
-//                    try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-//                    print("ios: success")
-//                } catch let error {
-//                    await MainActor.run {
-//                        print("ios: error occured: ", error.localizedDescription)
-//                        
-//                    }
-//                }
-//            }
-//        }
     }
 }
 
 class IOSNativeViewFactory: NativeViewFactory {
+    let appBlocker = AppBlockerUtil()
+    let state = AppBlockerState()
+    
+    func createSelectedAppsIconView(tokens: [String]) -> UIViewController {
+        let report = ProfileEditorView(
+            state: state,
+            appBlocker: appBlocker,
+            exclude: true
+        ) {applications, selection in
+             
+        }.frame(maxWidth: .infinity, maxHeight: 100)
+        return UIHostingController(rootView: report)
+    }
+    
+    
     func createOnboardingUsageScreen() -> UIViewController {
         let calendar = Calendar.current
         let now = Date()

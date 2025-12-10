@@ -10,3 +10,10 @@ actual fun NativeScreen(modifier: Modifier) {
 @Composable
 actual fun OnboardingUsageScreen(modifier: Modifier) {
 }
+
+@Composable
+actual fun SelectedAppsIconView(
+    tokens: List<String>,
+    modifier: Modifier,
+) {
+}

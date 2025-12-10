@@ -1,8 +1,11 @@
 package com.honeycomb.disciplineapp.presentation.focus_app
 
 import com.honeycomb.appblocker.AppBlockerSwift
+import com.honeycomb.disciplineapp.presentation.focus_app.models.AppIcon
 import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.UIKit.UIImage
+import platform.UIKit.removeImage
 
 @OptIn(ExperimentalForeignApi::class)
 
@@ -48,7 +51,21 @@ actual class AppBlocker {
         )
     }
 
-    actual fun selectApps(exclude: Boolean): List<AppInfo> {
-        return manager.selectApps(exclude)
+    actual fun selectApps(exclude: Boolean, onAppsSelected: (apps: List<AppInfo>) -> Unit) {
+        manager.selectAppsWithExclude(
+            exclude = exclude,
+            selectApps = { apps ->
+                onAppsSelected(
+                    apps?.mapNotNull {
+                        AppInfo(
+                            icon = null,
+                            packageName = "",
+                            name = "",
+                            token = (it as? String)
+                        )
+                    } as List<AppInfo>
+                )
+            },
+        )
     }
 }

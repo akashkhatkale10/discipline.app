@@ -10,7 +10,8 @@ expect class AppIcon {
 data class AppInfo(
     val name: String,
     val packageName: String,
-    val icon: AppIcon,
+    val icon: AppIcon?,
+    val token: String? = null,
 )
 
 expect suspend fun getInstalledApps(

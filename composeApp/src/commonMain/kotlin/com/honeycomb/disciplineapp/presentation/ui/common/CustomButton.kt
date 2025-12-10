@@ -72,7 +72,7 @@ fun CustomButton(
 
                 onClick()
             }
-            .clip(RoundedCornerShape(100.dp))
+            .clip(RoundedCornerShape(16.dp))
             .then(
                 when (type) {
                     ButtonDto.ButtonType.PRIMARY_BUTTON -> {
@@ -87,7 +87,7 @@ fun CustomButton(
                                 brush = Brush.horizontalGradient(
                                     colors = theme.primaryButtonStrokeColorGradient
                                 ),
-                                shape = RoundedCornerShape(100.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                     }
                     ButtonDto.ButtonType.SECONDARY_BUTTON -> {
@@ -98,7 +98,7 @@ fun CustomButton(
                             .border(
                                 width = 2.dp,
                                 color = theme.secondaryButtonStrokeColor,
-                                shape = RoundedCornerShape(100.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                     }
                     else -> {
@@ -109,13 +109,13 @@ fun CustomButton(
                             .border(
                                 width = 2.dp,
                                 color = borderColor,
-                                shape = RoundedCornerShape(100.dp)
+                                shape = RoundedCornerShape(16.dp)
                             )
                     }
                 }
             )
             .fillMaxWidth()
-            .height(50.dp)
+            .height(40.dp)
             .addStandardHorizontalPadding(),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically

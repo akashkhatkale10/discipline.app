@@ -176,11 +176,11 @@ fun InstalledAppsBottomSheet(
                                 if (item.isSelected) {
                                     SelectedBlurButton(
                                         content = {
-                                            Image(
-                                                painter = item.app.icon.toPainter()!!,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp)
-                                            )
+//                                            Image(
+//                                                painter = item.app.icon.toPainter()!!,
+//                                                contentDescription = null,
+//                                                modifier = Modifier.size(20.dp)
+//                                            )
 
                                             Text(
                                                 item.app.name,
@@ -204,11 +204,11 @@ fun InstalledAppsBottomSheet(
                                 } else {
                                     BlurButton(
                                         content = {
-                                            Image(
-                                                painter = item.app.icon.toPainter()!!,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp)
-                                            )
+//                                            Image(
+//                                                painter = item.app.icon.toPainter()!!,
+//                                                contentDescription = null,
+//                                                modifier = Modifier.size(20.dp)
+//                                            )
 
                                             Text(
                                                 item.app.name,
@@ -444,11 +444,11 @@ fun InstalledAppsBottomSheet(
                                             if (item.isSelected) {
                                                 SelectedBlurButton(
                                                     content = {
-                                                        Image(
-                                                            painter = item.app.icon.toPainter()!!,
-                                                            contentDescription = null,
-                                                            modifier = Modifier.size(20.dp)
-                                                        )
+//                                                        Image(
+//                                                            painter = item.app.icon.toPainter()!!,
+//                                                            contentDescription = null,
+//                                                            modifier = Modifier.size(20.dp)
+//                                                        )
 
                                                         Text(
                                                             item.app.name,
@@ -472,11 +472,11 @@ fun InstalledAppsBottomSheet(
                                             } else {
                                                 BlurButton(
                                                     content = {
-                                                        Image(
-                                                            painter = item.app.icon.toPainter()!!,
-                                                            contentDescription = null,
-                                                            modifier = Modifier.size(20.dp)
-                                                        )
+//                                                        Image(
+//                                                            painter = item.app.icon.toPainter()!!,
+//                                                            contentDescription = null,
+//                                                            modifier = Modifier.size(20.dp)
+//                                                        )
 
                                                         Text(
                                                             item.app.name,
@@ -622,22 +622,22 @@ fun getAppInfoCount(apps: List<AppInfo>?): String {
 
 fun groupAppsByCategory(apps: List<InstalledAppState>): Map<AppCategory, List<InstalledAppState>> {
     // Group by category
-    val grouped = apps.groupBy { it.app.category }
+//    val grouped = apps.groupBy { it.app.category }
+//
+//    // Move OTHER to last
+//    val otherApps = grouped[AppCategory.UNKNOWN]
+//    val ordered = linkedMapOf<AppCategory, List<InstalledAppState>>()
+//
+//    grouped.forEach { category ->
+//        if (category.key !is AppCategory.UNKNOWN) {
+//            grouped[category.key]?.let { ordered[category.key] = it }
+//        }
+//    }
+//
+//    // Add OTHER at the end if exists
+//    if (otherApps != null) {
+//        ordered[AppCategory.UNKNOWN] = otherApps
+//    }
 
-    // Move OTHER to last
-    val otherApps = grouped[AppCategory.UNKNOWN]
-    val ordered = linkedMapOf<AppCategory, List<InstalledAppState>>()
-
-    grouped.forEach { category ->
-        if (category.key !is AppCategory.UNKNOWN) {
-            grouped[category.key]?.let { ordered[category.key] = it }
-        }
-    }
-
-    // Add OTHER at the end if exists
-    if (otherApps != null) {
-        ordered[AppCategory.UNKNOWN] = otherApps
-    }
-
-    return ordered
+    return mapOf()
 }

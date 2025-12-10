@@ -44,8 +44,6 @@ actual suspend fun getInstalledApps(
                 name = appName,
                 packageName = packageName,
                 icon = AppIcon(iconDrawable),
-                isSystemApp = isSystem,
-                category = appInfo.category.toAppCategory()
             )
         }
         .sortedBy { it.name.lowercase() }

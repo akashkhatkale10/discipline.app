@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,11 +25,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -37,19 +43,32 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.honeycomb.disciplineapp.BackgroundColor
 import com.honeycomb.disciplineapp.CustomTextStyle
+import com.honeycomb.disciplineapp.RedColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
+import com.honeycomb.disciplineapp.data.dto.ButtonDto
 import com.honeycomb.disciplineapp.nunitoFontFamily
 import com.honeycomb.disciplineapp.presentation.Screen
 import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
+import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.FocusOptionRow
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.FocusType
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.SchedulePickerRow
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.ScheduleType
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.TimePickerRow
 import com.honeycomb.disciplineapp.presentation.utils.Constants.HORIZONTAL_PADDING
 import com.honeycomb.disciplineapp.presentation.utils.DataUtils.getCurrentFormattedDate
+import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import com.honeycomb.disciplineapp.presentation.utils.bounceClick
+import com.honeycomb.disciplineapp.presentation.utils.now
+import com.honeycomb.disciplineapp.presentation.utils.plus
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -61,6 +80,22 @@ fun HomeScreen(
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val a = AppBlocker()
+    val theme = LocalTheme.current
+    var selectedFocusType by remember { mutableStateOf(FocusType.HARD) }
+    var selectedScheduleType by remember { mutableStateOf(ScheduleType.NOW) }
+    var focusSessionName by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf(15) }
+    var fromDate by remember { mutableStateOf(LocalDateTime.now()) }
+    var endDate by remember { mutableStateOf(LocalDateTime.now().plus(15, DateTimeUnit.MINUTE)) }
+    val scope = rememberCoroutineScope()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val appBlocker = remember {
+        AppBlocker()
+    }
+
+    var selectedAppTokens: List<AppInfo> by remember {
+        mutableStateOf(emptyList())
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getHomeData()
@@ -85,10 +120,6 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AnimatedLogo(
-                        size = 12,
-                        modifier = Modifier
-                    )
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -131,43 +162,59 @@ fun HomeScreen(
             state.data != null -> {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(top = 30.dp, bottom = 30.dp),
                 ) {
-
                     if (state.data!!.isNotEmpty()) {
 
                     } else {
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,
                         ){
                             item {
                                 TitleSubtitleAction(
                                     title = "start your first focus session",
-                                    subtitle = "let's create your customised focus session",
+                                    subtitle = "every distraction is a betrayal your future self will remember",
                                     modifier = Modifier.addStandardHorizontalPadding(),
                                     action = {
-                                        CustomButton(
-                                            text = "create your focus session",
-                                            endIconComposable = {
-                                                Icon(
-                                                    Icons.Default.ArrowForward,
-                                                    contentDescription = null,
-                                                    tint = WhiteColor
-                                                )
-                                            },
-                                            onClick = {
-                                                navController
-                                                    .navigate(Screen.CreateFocusScreenRoute)
-//                                            a.startBlocking(
-//                                                context = null,
-//                                                packageNames = listOf("com.example.app"),
-//                                                durationMinutes = 60,
-//                                                onFinished = {}
-//                                            )
-                                            }
-                                        )
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            CustomButton(
+                                                text = "start a focus session",
+                                                startIconComposable = {
+                                                    Icon(
+                                                        Icons.Default.PlayArrow,
+                                                        contentDescription = null,
+                                                        tint = WhiteColor,
+                                                        modifier = Modifier
+                                                            .size(18.dp)
+                                                    )
+                                                },
+                                                onClick = {
+                                                    navController
+                                                        .navigate(Screen.CreateFocusScreenRoute)
+                                                }
+                                            )
+                                            CustomButton(
+                                                text = "schedule a focus session",
+                                                startIconComposable = {
+                                                    Icon(
+                                                        Icons.Default.DateRange,
+                                                        contentDescription = null,
+                                                        tint = WhiteColor,
+                                                        modifier = Modifier
+                                                            .size(14.dp)
+                                                    )
+                                                },
+                                                onClick = {
+
+                                                },
+                                                type = ButtonDto.ButtonType.SECONDARY_BUTTON
+                                            )
+                                        }
                                     }
                                 )
                             }
@@ -178,13 +225,6 @@ fun HomeScreen(
 
             }
         }
-
-
-        Spacer(
-            modifier = Modifier
-                .height(100.dp)
-        )
-
     }
 }
 

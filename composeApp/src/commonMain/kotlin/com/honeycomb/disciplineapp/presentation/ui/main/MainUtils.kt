@@ -10,22 +10,22 @@ import disciplineapp.composeapp.generated.resources.settings
 object MainUtils {
     val menuItems = listOf(
         MenuItem(
-            "Home",
+            "focus",
             icon = Res.drawable.home,
             route = MainScreen.Home
         ),
         MenuItem(
-            "Friends",
+            "friends",
             icon = Res.drawable.friends,
             route = MainScreen.Friends
         ),
         MenuItem(
-            "Leaderboard",
+            "stats",
             icon = Res.drawable.leaderboard,
             route = MainScreen.Leaderboard
         ),
         MenuItem(
-            "Settings",
+            "settings",
             icon = Res.drawable.settings,
             route = MainScreen.Settings
         )

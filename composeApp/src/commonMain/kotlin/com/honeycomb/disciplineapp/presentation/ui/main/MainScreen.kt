@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -44,6 +49,7 @@ import com.honeycomb.disciplineapp.CustomTextStyle
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.presentation.models.MenuItem
+import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.friends.FriendsScreen
 import com.honeycomb.disciplineapp.presentation.ui.home.HomeScreen
 import com.honeycomb.disciplineapp.presentation.ui.leaderboard.LeaderboardScreen
@@ -72,33 +78,101 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-                BottomAppBar(
-                    containerColor = Color.Transparent,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                ) {
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        menuItems.forEachIndexed { index, item ->
-                            MenuItemContent(
-                                item = item,
-                                index = index,
-                                selectedIndex = selectedIndex,
-                                onMenuItemClick = {
-                                    selectedIndex = index
-                                    mainNavHost.navigate(
-                                        it.route.route
+            NavigationBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                containerColor = Color(0xFF1A1A1B),
+                contentColor = Color.White
+            ) {
+                menuItems.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        icon = {
+                            if (index == 0) {
+                                if (index == selectedIndex) {
+                                    AnimatedLogo(
+                                        size = 24,
+                                        modifier = Modifier
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = modifier
+                                            .size(24.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                brush = Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color(0xFFA4A4A4),
+                                                        Color(0xFF676767)
+                                                    )
+                                                )
+                                            )
                                     )
                                 }
+                            } else {
+                                Image(
+                                    imageVector = vectorResource(item.icon),
+                                    contentDescription = item.label,
+                                    modifier = Modifier
+                                        .height(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        color = if (index == selectedIndex) WhiteColor else SubtitleTextColor,
+                                    )
+                                )
+                            }
+
+                        },
+                        label = {
+                            Text(
+                                item.label,
+                                style = CustomTextStyle.copy(
+                                    fontSize = 12.sp,
+                                    color = if (index == selectedIndex) WhiteColor else SubtitleTextColor,
+                                    fontWeight = FontWeight.Medium
+                                )
                             )
-                        }
-                    }
+                        },
+                        interactionSource = null,
+                        selected = selectedIndex == index,
+                        onClick = {
+                            selectedIndex = index
+                            mainNavHost.navigate(item.route.route)
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.White,
+                            unselectedIconColor = Color.LightGray,
+                            indicatorColor = Color.Transparent
+                        )
+                    )
                 }
+            }
+//                BottomAppBar(
+//                    containerColor = Color(0xFF1A1A1B),
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(80.dp)
+//                ) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceEvenly,
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                    ) {
+//                        menuItems.forEachIndexed { index, item ->
+//                            MenuItemContent(
+//                                item = item,
+//                                index = index,
+//                                selectedIndex = selectedIndex,
+//                                onMenuItemClick = {
+//                                    selectedIndex = index
+//                                    mainNavHost.navigate(
+//                                        it.route.route
+//                                    )
+//                                }
+//                            )
+//                        }
+//                    }
+//                }
         }
     ) {
         Box(
@@ -153,42 +227,45 @@ fun MenuItemContent(
     modifier: Modifier = Modifier,
     onMenuItemClick: (MenuItem) -> Unit = {},
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .bounceClick {
+                onMenuItemClick(item)
+            }
+//                .background(
+//                    color = if (index == selectedIndex) AccentColor else Color.Transparent,
+//                    shape = CircleShape
+//                )
+//                .then(
+//                    if (index != selectedIndex) {
+//                        Modifier
+//                            .border(
+//                                width = 1.dp,
+//                                shape = CircleShape,
+//                                color = SubtitleTextColor
+//                            )
+//                    } else Modifier
+//                ),
     ) {
-        Box(
+        Image(
+            imageVector = vectorResource(item.icon),
+            contentDescription = item.label,
             modifier = Modifier
-                .bounceClick {
-                    onMenuItemClick(item)
-                }
-                .size(54.dp)
-                .background(
-                    color = if (index == selectedIndex) AccentColor else Color.Transparent,
-                    shape = CircleShape
-                )
-                .then(
-                    if (index != selectedIndex) {
-                        Modifier
-                            .border(
-                                width = 1.dp,
-                                shape = CircleShape,
-                                color = SubtitleTextColor
-                            )
-                    } else Modifier
-                )
-                .padding(12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                imageVector = vectorResource(item.icon),
-                contentDescription = item.label,
-                modifier = Modifier
-                    .align(Alignment.Center),
-                colorFilter = ColorFilter.tint(
-                    color = if (index == selectedIndex) WhiteColor else SubtitleTextColor,
-                )
+                .height(24.dp),
+            colorFilter = ColorFilter.tint(
+                color = if (index == selectedIndex) WhiteColor else SubtitleTextColor,
             )
-        }
+        )
+
+        Text(
+            item.label,
+            style = CustomTextStyle.copy(
+                fontSize = 12.sp,
+                color = if (index == selectedIndex) WhiteColor else SubtitleTextColor,
+                fontWeight = FontWeight.Normal
+            )
+        )
     }
 }

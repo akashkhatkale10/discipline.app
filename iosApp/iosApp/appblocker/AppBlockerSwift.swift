@@ -14,30 +14,45 @@ import AVFoundation
     @objc public static let shared = AppBlockerSwift()
     private let center = DeviceActivityCenter()
     
+    let state = AppBlockerState()
     let appBlocker = AppBlockerUtil()
     
-    @objc public func selectApps(exclude: Bool) -> []
+    var profileHost: UIHostingController<ProfileEditorView>?
+    
+    @objc public func selectApps(exclude: Bool, selectApps: @escaping ([String]) -> Void) {
+        self.profileHost?.view.removeFromSuperview()
+        self.profileHost = nil
+        
+        let report = ProfileEditorView(
+            state: state,
+            appBlocker: appBlocker,
+            exclude: exclude,
+            onSave: {applications, selection in
+                print("applications : \(applications)")
+                let result = applications.map { app in"" }
+                selectApps(result)
+            }
+        )
+
+        let host = UIHostingController(rootView: report)
+        host.view.frame = CGRect(x: -100, y: -100, width: 1, height: 1)
+        profileHost = host
+        
+        UIApplication.shared.windows.first?.rootViewController?.view.addSubview(host.view)
+    }
+    
     
     @objc public func stopBlocking() {
         appBlocker.deactivateRestrictions()
     }
     
-    @objc public func startBlocking() {
-
-        let report = ProfileEditorView(appBlocker: appBlocker)
-        
-        let host = UIHostingController(rootView: report)
-        host.view.frame = CGRect(x: 100, y: 100, width: 500, height: 300)
-        UIApplication.shared.windows.first?.rootViewController?.view.addSubview(host.view)
-    }
+    @objc public func startBlocking() {}
     
     
     @objc public func requestPermission(
         onSuccess: @escaping (Bool) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        print("ios: requestPermission")
-        
         Task {
             do {
                 try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
@@ -46,7 +61,6 @@ import AVFoundation
                 }
             } catch let error {
                 await MainActor.run {
-                    print("ios: error occured: ", error.localizedDescription)
                     onError(error.localizedDescription)
                 }
             }
@@ -60,42 +74,70 @@ extension DeviceActivityReport.Context {
     static let socialMediaGuilt = Self("socialMediaGuilt")   // ← Must be identical everywhere
 }
 
+
+
 @available(iOS 16.0, *)
 struct ProfileEditorView: View {
+    @ObservedObject var state: AppBlockerState
     let appBlocker: AppBlockerUtil
-    // State to store the user's selection
-    @State private var activitySelection = FamilyActivitySelection()
-    // State to control the presentation of the picker
-    @State private var isPickerPresented = false
+    let exclude: Bool
+    let onSave: (Set<Application>, FamilyActivitySelection) -> Void
+    
+    @State var showSheet: Bool = true
+    
+    
+    init(state: AppBlockerState, appBlocker: AppBlockerUtil, exclude: Bool, onSave: @escaping (Set<Application>, FamilyActivitySelection) -> Void) {
+        self.state = state
+        self.appBlocker = appBlocker
+        self.exclude = exclude
+        self.onSave = onSave
+        self.showSheet = showSheet
+        
+        state.activitySelection.includeEntireCategory
+    }
+    
     var body: some View {
-        VStack {
-            Text("Selected \(activitySelection.applicationTokens.count) apps, \(activitySelection.categoryTokens.count) categories, \(activitySelection.webDomainTokens.count) websites")
-            Button("Select Apps & Websites") {
-                isPickerPresented = true
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            FamilyActivityPicker(selection: $state.activitySelection)
         }
-        // The magic modifier!
+        .background(Color(hex: "#0D0D0D"))
         .familyActivityPicker(
-            headerText: "select apps to block",
-            footerText: "demo",
-            isPresented: $isPickerPresented,
-            selection: $activitySelection
+            headerText: exclude ? "select apps to exclude from blocking" : "select apps to block",
+            footerText: "",
+            isPresented: $state.isPickerPresented,
+            selection: $state.activitySelection
         )
-        .onChange(of: activitySelection) { newSelection in
-            print("Selection Updated!")
-            // In a real app, you'd likely save 'newSelection'
-            // to your data model (like the 'BlockedProfiles' model).
-            saveSelection(newSelection)
+        .onChange(of: state.activitySelection) { newSelection in
+            onSave(newSelection.applications, newSelection)
+            state.activitySelection = newSelection
+        }
+        .sheet(isPresented: $showSheet, onDismiss: {}) {
+            AppsBlockedBottomSheet(
+                onAddClick: {
+                    state.isPickerPresented = true
+                },
+                state: state
+            )
         }
     }
     func saveSelection(_ selection: FamilyActivitySelection) {
-        // Placeholder: Implement saving logic here
-        // e.g., update your SwiftData model:
-        // try? BlockedProfiles.updateProfile(profile, in: context, selection: selection)
-        print("Saving selection... \(selection.applications)")
         appBlocker.activateRestrictions(selection: selection)
     }
 }
+
+@available(iOS 16.0, *)
+struct TokenIconView: View {
+    let token: ApplicationToken
+
+    var body: some View {
+        Label(token)
+            .labelStyle(.iconOnly)
+            .padding(4)
+            .frame(width: 32, height: 32)  // Icon size
+            .clipShape(Circle())
+    }
+}
+
 
 @available(iOS 16.0, *)
 class AppBlockerUtil { // Continuing the simplified class
@@ -168,5 +210,86 @@ class AppBlockerUtil { // Continuing the simplified class
         store.shield.webDomains = nil
         print("Restrictions removed from ManagedSettingsStore.")
         // NOTE: Also need to stop DeviceActivity monitoring.
+    }
+}
+
+
+
+
+enum FontWeight {
+    case light
+    case regular
+    case medium
+    case semiBold
+    case bold
+    case extraBold
+}
+
+extension Font {
+    static let customFont: (FontWeight, CGFloat) -> Font = { fontType, size in
+        switch fontType {
+        case .light:
+            Font.custom("Montserrat-Light", size: size)
+        case .regular:
+            Font.custom("Montserrat-Regular", size: size)
+        case .medium:
+            Font.custom("Montserrat-Medium", size: size)
+        case .semiBold:
+            Font.custom("Montserrat-SemiBold", size: size)
+        case .bold:
+            Font.custom("Montserrat-Bold", size: size)
+        case .extraBold:
+            Font.custom("Montserrat-ExtraBold", size: size)
+        }
+    }
+}
+
+extension Text {
+    func customFont(_ fontWeight: FontWeight? = .regular, _ size: CGFloat? = nil) -> Text {
+        return self.font(.customFont(fontWeight ?? .regular, size ?? 16))
+    }
+}
+
+
+extension Color {
+    init(hex: String) {
+        var hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+
+        let r, g, b, a: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (r, g, b, a) = (
+                (int >> 8) * 17,
+                (int >> 4 & 0xF) * 17,
+                (int & 0xF) * 17,
+                255
+            )
+        case 6: // RGB (24-bit)
+            (r, g, b, a) = (
+                int >> 16,
+                int >> 8 & 0xFF,
+                int & 0xFF,
+                255
+            )
+        case 8: // ARGB (32-bit)
+            (r, g, b, a) = (
+                int >> 16 & 0xFF,
+                int >> 8 & 0xFF,
+                int & 0xFF,
+                int >> 24 & 0xFF
+            )
+        default:
+            (r, g, b, a) = (0, 0, 0, 255)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
     }
 }

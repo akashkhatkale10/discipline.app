@@ -29,13 +29,21 @@ val blackTheme = AppTheme(
         Color(0xFF0D0D0D),
     ),
 
+//    primaryButtonColorGradient = listOf(
+//        Color(0xFFCF414B),
+//        Color(0xFFC62D2D),
+//    ),
+//    primaryButtonStrokeColorGradient = listOf(
+//        Color(0xFFE5727F),
+//        Color(0xFFC74545),
+//    ),
     primaryButtonColorGradient = listOf(
-        Color(0xFFCF414B),
-        Color(0xFFC62D2D),
+        Color(0xFF1A9597),
+        Color(0xFF0B80E6),
     ),
     primaryButtonStrokeColorGradient = listOf(
-        Color(0xFFE5727F),
-        Color(0xFFC74545),
+        Color(0xFF52C0C1),
+        Color(0xFF0B80E6),
     ),
 
     secondaryButtonColor = Color(0x05FFFFFF),

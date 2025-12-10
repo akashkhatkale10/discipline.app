@@ -1,7 +1,13 @@
 package com.honeycomb.disciplineapp.presentation.ui.focus_app
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,9 +76,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import com.honeycomb.disciplineapp.LightestBackgroundColor
 import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
+import com.honeycomb.disciplineapp.presentation.focus_app.SelectedAppsIconView
+import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.TimeDropDownOptionsSheet
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToReadableDate
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToReadableDateTime
@@ -86,6 +107,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+
 
 enum class FocusType {
     SOFT, HARD
@@ -95,7 +118,7 @@ enum class ScheduleType {
     NOW, LATER
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun CreateFocusScreen(
     navController: NavController,
@@ -114,8 +137,13 @@ fun CreateFocusScreen(
         AppBlocker()
     }
 
+    var selectedAppTokens: List<AppInfo> by remember {
+        mutableStateOf(emptyList())
+    }
+
     Column(
         modifier = modifier
+            .padding(bottom = 30.dp)
             .fillMaxSize()
             .background(
                 brush = Brush
@@ -160,7 +188,7 @@ fun CreateFocusScreen(
                                     fontFamily = nunitoFontFamily
                                 )
                             ) {
-                                append("create your focus session")
+                                append("start a focus session")
                             }
                         },
                         style = CustomTextStyle
@@ -175,100 +203,26 @@ fun CreateFocusScreen(
                 .verticalScroll(rememberScrollState())
                 .addStandardHorizontalPadding()
                 .padding(top = 24.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Focus Type Toggle
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                FocusTypeButton(
-                    text = "soft focus",
-                    isSelected = selectedFocusType == FocusType.SOFT,
-                    onClick = { selectedFocusType = FocusType.SOFT }
-                )
-                FocusTypeButton(
-                    text = "hard focus",
-                    isSelected = selectedFocusType == FocusType.HARD,
-                    onClick = { selectedFocusType = FocusType.HARD }
-                )
-            }
 
-            // Name Input Field
-            FocusSessionNameInput(
-                value = focusSessionName,
-                onValueChange = { focusSessionName = it }
-            )
-
-            // Blocked Apps Section
-            FocusOptionRow(
-                end = {
-                    Text(
-                        text = "all",
-                        style = CustomTextStyle.copy(
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = RedColor
+                            color = theme.quaternaryColor,
+                            fontFamily = nunitoFontFamily
                         )
-                    )
-
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = theme.quaternaryColor,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    ) {
+                        append("every distraction is a betrayal your future self will remember")
+                    }
                 },
-                title = "\uD83D\uDED1   blocked apps",
-                onClick = {
-                    appBlocker.selectApps()
-                }
+                style = CustomTextStyle,
+                textAlign = TextAlign.Center
             )
 
-            // Settings Section
-            FocusOptionRow(
-                end = {
-                    Text(
-                        text = "all",
-                        style = CustomTextStyle.copy(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = RedColor
-                        )
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint =  theme.quaternaryColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                title = "\uD83D\uDED1   settings",
-            )
-
-            // Bottom Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement
-                    .spacedBy(12.dp)
-            ) {
-                BorderFocusTypeButton(
-                    text = "schedule now",
-                    modifier = Modifier,
-                    onClick = {
-                        selectedScheduleType = ScheduleType.NOW
-                    },
-                    isSelected = selectedScheduleType == ScheduleType.NOW
-                )
-                BorderFocusTypeButton(
-                    text = "schedule later",
-                    modifier = Modifier,
-                    onClick = {
-                        selectedScheduleType = ScheduleType.LATER
-                    },
-                    isSelected = selectedScheduleType == ScheduleType.LATER
-                )
-            }
 
             Spacer(
                 modifier = Modifier
@@ -293,6 +247,104 @@ fun CreateFocusScreen(
                     onTimeChange = { time = it }
                 )
             }
+
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ){
+                FocusOptionRow(
+                    end = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = "all",
+                                style = CustomTextStyle.copy(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = RedColor
+                                )
+                            )
+
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = theme.quaternaryColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    },
+                    title = "\uD83D\uDED1   blocked apps",
+                    onClick = {
+                        appBlocker.selectApps(
+                            exclude = true,
+                            onAppsSelected = {
+                                selectedAppTokens = it
+                            }
+                        )
+                    },
+                    subtitle = if (selectedAppTokens.isNotEmpty()) "except: ${selectedAppTokens.size} apps" else "",
+                    modifier = Modifier
+                        .weight(0.55f)
+                )
+
+                // Settings Section
+                FocusOptionRow(
+                    end = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = "all",
+                                style = CustomTextStyle.copy(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = theme.quaternaryColor
+                                )
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint =  theme.quaternaryColor,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    },
+                    title = "settings",
+                    modifier = Modifier
+                        .weight(0.45f)
+                )
+            }
+
+            FocusOptionRow(
+                end = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "hard",
+                            style = CustomTextStyle.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = theme.quaternaryColor
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint =  theme.quaternaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                },
+                titleIcon = {
+                    AnimatedLogo(14)
+                },
+                title = "focus mode",
+                modifier = Modifier
+            )
 
             CustomButton(
                 type = ButtonDto.ButtonType.PRIMARY_BUTTON,
@@ -320,13 +372,14 @@ fun SchedulePickerRow(
     endDate: LocalDateTime,
     onStartPicked: (LocalDateTime) -> Unit,
     onEndPicked: (LocalDateTime) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val theme = LocalTheme.current
     val context = LocalPlatformContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier
+        modifier = modifier
             .addStandardHorizontalPadding()
     ) {
         Box(
@@ -354,7 +407,7 @@ fun SchedulePickerRow(
                 text = startDate.formatToReadableDateTime(),
                 style = CustomTextStyle.copy(
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     color = WhiteColor
                 )
             )
@@ -394,7 +447,7 @@ fun SchedulePickerRow(
                 text = endDate.formatToReadableDateTime(),
                 style = CustomTextStyle.copy(
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     color = WhiteColor
                 )
             )
@@ -429,7 +482,7 @@ fun BorderFocusTypeButton(
             text = text,
             style = CustomTextStyle.copy(
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Normal,
                 color = WhiteColor
             )
         )
@@ -578,40 +631,126 @@ fun FocusOptionRow(
     title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    subtitle: String = ""
 ) {
     val theme = LocalTheme.current
-    Box(
-        modifier = modifier
-            .bounceClick(onClick = onClick)
-            .fillMaxWidth()
-            .background(
-                color = theme.secondaryButtonColor,
-                shape = RoundedCornerShape(14.dp)
-            )
-            .border(
-                width = 1.dp,
-                color = theme.tertiaryColor,
-                shape = RoundedCornerShape(14.dp)
-            )
-            .padding(horizontal = 14.dp, vertical = 12.dp)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .bounceClick(onClick = onClick)
+                .fillMaxWidth()
+                .background(
+                    color = theme.secondaryButtonColor,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = theme.tertiaryColor,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .padding( vertical = 12.dp)
+                .padding( end = 8.dp, start = 12.dp)
         ) {
-            Text(
-                text = title,
-                style = CustomTextStyle.copy(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = WhiteColor
-                ),
-                modifier = Modifier.weight(1f)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = CustomTextStyle.copy(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
 
-            end()
+                end()
+            }
+        }
+
+        if (subtitle.isNotEmpty()) {
+            Text(
+                text = subtitle,
+                style = CustomTextStyle.copy(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = theme.quaternaryColor
+                ),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun FocusOptionRow(
+    end: @Composable () -> Unit = {},
+    title: String,
+    titleIcon: @Composable () -> Unit = {},
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    subtitle: String = ""
+) {
+    val theme = LocalTheme.current
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = modifier
+                .bounceClick(onClick = onClick)
+                .fillMaxWidth()
+                .background(
+                    color = theme.secondaryButtonColor,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = theme.tertiaryColor,
+                    shape = RoundedCornerShape(14.dp)
+                )
+                .padding(horizontal = 14.dp, vertical = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                titleIcon()
+
+
+                Text(
+                    text = title,
+                    style = CustomTextStyle.copy(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = WhiteColor
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+
+                end()
+            }
+        }
+
+        if (subtitle.isNotEmpty()) {
+            Text(
+                text = subtitle,
+                style = CustomTextStyle.copy(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = theme.quaternaryColor
+                ),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            )
         }
     }
 }
@@ -646,7 +785,7 @@ fun TimePickerRow(
                     color = theme.tertiaryColor,
                     shape = RoundedCornerShape(14.dp)
                 )
-                .padding(vertical = 12.dp),
+                .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -670,14 +809,14 @@ fun TimePickerRow(
                     color = theme.tertiaryColor,
                     shape = RoundedCornerShape(14.dp)
                 )
-                .padding(vertical = 12.dp),
+                .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$time mins",
                 style = CustomTextStyle.copy(
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                     color = WhiteColor
                 )
             )
@@ -697,13 +836,13 @@ fun TimePickerRow(
                     color = theme.tertiaryColor,
                     shape = RoundedCornerShape(14.dp)
                 )
-                .padding(vertical = 12.dp),
+                .height(40.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "+",
                 style = CustomTextStyle.copy(
-                    fontSize = 16.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Normal,
                     color = WhiteColor
                 )
@@ -719,3 +858,10 @@ fun CreateFocusScreenPreview() {
         navController = rememberNavController()
     )
 }
+
+@Composable
+@Preview
+fun GradientCircularShadowBoxPreview() {
+
+}
+
