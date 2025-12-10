@@ -103,11 +103,13 @@ import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
 import com.honeycomb.disciplineapp.presentation.utils.now
 import com.honeycomb.disciplineapp.presentation.utils.plus
+import disciplineapp.composeapp.generated.resources.Res
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 
 enum class FocusType {
@@ -224,6 +226,23 @@ fun CreateFocusScreen(
             )
 
 
+            Box(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp)
+            ) {
+                Image(
+                    painter = painterResource(
+                        Res.drawable.glow
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+
             Spacer(
                 modifier = Modifier
                     .weight(1f)
@@ -274,7 +293,7 @@ fun CreateFocusScreen(
                             )
                         }
                     },
-                    title = "\uD83D\uDED1   blocked apps",
+                    title = "\uD83D\uDEAB   blocked apps",
                     onClick = {
                         appBlocker.selectApps(
                             exclude = true,
