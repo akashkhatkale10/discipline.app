@@ -116,7 +116,10 @@ struct ProfileEditorView: View {
                 onAddClick: {
                     state.isPickerPresented = true
                 },
-                state: state
+                dismissClick: {
+                    showSheet = false
+                },
+                state: state,
             )
         }
     }
