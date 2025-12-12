@@ -28,9 +28,9 @@ import AVFoundation
             appBlocker: appBlocker,
             exclude: exclude,
             onSave: {applications, selection in
-                print("applications : \(applications)")
-                let result = applications.map { app in"" }
-                selectApps(result)
+                let result = self.state.activitySelection.applicationTokens.map { app in ""}
+                let result2 = self.state.activitySelection.webDomainTokens.map { app in ""}
+                selectApps(result + result2)
             }
         )
 
@@ -108,7 +108,6 @@ struct ProfileEditorView: View {
             selection: $state.activitySelection
         )
         .onChange(of: state.activitySelection) { newSelection in
-            onSave(newSelection.applications, newSelection)
             state.activitySelection = newSelection
         }
         .sheet(isPresented: $showSheet, onDismiss: {}) {

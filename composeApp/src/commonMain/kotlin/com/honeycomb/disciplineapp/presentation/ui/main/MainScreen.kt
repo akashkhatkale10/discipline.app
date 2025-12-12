@@ -146,33 +146,6 @@ fun MainScreen(
                     )
                 }
             }
-//                BottomAppBar(
-//                    containerColor = Color(0xFF1A1A1B),
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(80.dp)
-//                ) {
-//                    Row(
-//                        horizontalArrangement = Arrangement.SpaceEvenly,
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                    ) {
-//                        menuItems.forEachIndexed { index, item ->
-//                            MenuItemContent(
-//                                item = item,
-//                                index = index,
-//                                selectedIndex = selectedIndex,
-//                                onMenuItemClick = {
-//                                    selectedIndex = index
-//                                    mainNavHost.navigate(
-//                                        it.route.route
-//                                    )
-//                                }
-//                            )
-//                        }
-//                    }
-//                }
         }
     ) {
         Box(
@@ -213,6 +186,7 @@ fun MainScreen(
                             theme.backgroundColorGradient
                         )
                     )
+                    .padding(top = it.calculateTopPadding())
             )
         }
     }

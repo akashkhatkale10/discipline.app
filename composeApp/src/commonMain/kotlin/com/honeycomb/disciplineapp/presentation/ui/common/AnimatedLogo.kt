@@ -7,10 +7,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,7 +25,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AnimatedLogo(
     size: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showBorder: Boolean = false
 ) {
     val infiniteTransition = rememberInfiniteTransition()
 
@@ -59,6 +62,21 @@ fun AnimatedLogo(
                         endColor
                     )
                 )
+            )
+            .then(
+                if (showBorder) {
+                    Modifier
+                        .border(
+                            width = 2.dp,
+                            shape = CircleShape,
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0x50FFE287),
+                                    Color(0x50479D8D),
+                                )
+                            )
+                        )
+                } else Modifier
             )
     )
 }

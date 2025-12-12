@@ -1,18 +1,23 @@
 package com.honeycomb.disciplineapp.presentation.ui.focus_app
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +25,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,17 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.honeycomb.disciplineapp.AccentColor
 import com.honeycomb.disciplineapp.CustomTextStyle
-import com.honeycomb.disciplineapp.LightBackgroundColor
 import com.honeycomb.disciplineapp.RedColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.data.dto.ButtonDto
-import com.honeycomb.disciplineapp.data.dto.FieldDto
-import com.honeycomb.disciplineapp.data.dto.InputFieldDto
 import com.honeycomb.disciplineapp.nunitoFontFamily
-import com.honeycomb.disciplineapp.presentation.ui.Theme
 import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.BorderIconButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
@@ -66,50 +63,37 @@ import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import com.honeycomb.disciplineapp.presentation.utils.dashedBorder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
-import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
-import com.honeycomb.disciplineapp.LightestBackgroundColor
-import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
-import com.honeycomb.disciplineapp.presentation.focus_app.SelectedAppsIconView
 import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
-import com.honeycomb.disciplineapp.presentation.ui.add_habit.TimeDropDownOptionsSheet
-import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToReadableDate
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToReadableDateTime
 import com.honeycomb.disciplineapp.presentation.ui.common.pickDate
-import com.honeycomb.disciplineapp.presentation.utils.Constants.TIME_ANYTIME_ENABLED
 import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
 import com.honeycomb.disciplineapp.presentation.utils.now
 import com.honeycomb.disciplineapp.presentation.utils.plus
 import disciplineapp.composeapp.generated.resources.Res
-import kotlinx.coroutines.launch
+import disciplineapp.composeapp.generated.resources.glow
+import disciplineapp.composeapp.generated.resources.pause
+import disciplineapp.composeapp.generated.resources.stop
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 
 enum class FocusType {
@@ -120,194 +104,268 @@ enum class ScheduleType {
     NOW, LATER
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class, KoinExperimentalAPI::class)
 @Composable
 fun CreateFocusScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel = koinViewModel<CreateFocusViewModel>()
+    val state by viewModel.state.collectAsState()
+    val minutes by viewModel.minutes.collectAsState()
+    val seconds by viewModel.seconds.collectAsState()
+    val remainingSeconds by viewModel.timer.remainingSeconds.collectAsState()
     val theme = LocalTheme.current
-    var selectedFocusType by remember { mutableStateOf(FocusType.HARD) }
     var selectedScheduleType by remember { mutableStateOf(ScheduleType.NOW) }
-    var focusSessionName by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf(15) }
     var fromDate by remember { mutableStateOf(LocalDateTime.now()) }
     var endDate by remember { mutableStateOf(LocalDateTime.now().plus(15, DateTimeUnit.MINUTE)) }
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
-    val appBlocker = remember {
-        AppBlocker()
-    }
 
     var selectedAppTokens: List<AppInfo> by remember {
         mutableStateOf(emptyList())
     }
 
-    Column(
-        modifier = modifier
-            .padding(bottom = 30.dp)
-            .fillMaxSize()
-            .background(
-                brush = Brush
-                    .verticalGradient(theme.backgroundColorGradient)
-            )
-            .noRippleClickable {
-                keyboard?.hide()
-            },
+    val bgAnimProgress by animateFloatAsState(
+        targetValue = if (state.timerState == TimerState.IDLE) 0f else 1f,
+        animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+    )
+    val animatedProgress by animateFloatAsState(
+        targetValue = remainingSeconds / (1 * 60f),
+        animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+    )
+
+    // Gradient A -> B
+    val startColor = lerp(
+        Color(0xFF0D0D0D), // A's start color
+        Color(0xFF0A2C2D),
+        bgAnimProgress
+    )
+    val endColor = lerp(
+        Color(0xFF0D0D0D), // A's end color
+        Color(0xFF081717),
+        bgAnimProgress
+    )
+
+    Scaffold(
+        containerColor = endColor
     ) {
-        CustomTopBar(
-            modifier = Modifier
-                .padding(horizontal = 20.dp),
-            startComposable = {
-                BorderIconButton(
-                    modifier = Modifier
-                        .bounceClick {
-                            println("popped: ${navController.popBackStack()}")
-                        },
-                    iconComposable = {
-                        Icon(
-                            Icons.Filled.KeyboardArrowLeft,
-                            contentDescription = null,
-                            tint = theme.quaternaryColor
-                        )
-                    },
-                )
-            },
-            endComposable = {
-            },
-            midComposable = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                SpanStyle(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = WhiteColor,
-                                    fontFamily = nunitoFontFamily
-                                )
-                            ) {
-                                append("start a focus session")
-                            }
-                        },
-                        style = CustomTextStyle
-                    )
-                }
-            }
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .addStandardHorizontalPadding()
-                .padding(top = 24.dp, bottom = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = theme.quaternaryColor,
-                            fontFamily = nunitoFontFamily
-                        )
-                    ) {
-                        append("every distraction is a betrayal your future self will remember")
-                    }
-                },
-                style = CustomTextStyle,
-                textAlign = TextAlign.Center
-            )
-
-
-            Box(
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
-            ) {
-                Image(
-                    painter = painterResource(
-                        Res.drawable.glow
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            // Time Picker
-            if (selectedScheduleType == ScheduleType.LATER) {
-                SchedulePickerRow(
-                    startDate = fromDate,
-                    endDate = endDate,
-                    onEndPicked = {
-                        endDate = it
-                    },
-                    onStartPicked = {
-                        fromDate = it
-                    }
-                )
-            } else {
-                TimePickerRow(
-                    time = time,
-                    onTimeChange = { time = it }
-                )
-            }
-
-            Row (
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                FocusOptionRow(
-                    end = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            Text(
-                                text = "all",
-                                style = CustomTextStyle.copy(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = RedColor
+        Box {
+            Column(
+                modifier = modifier
+                    .padding(bottom = 30.dp)
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush
+                            .verticalGradient(
+                                colors = listOf(
+                                    startColor,
+                                    endColor
                                 )
                             )
-
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowRight,
-                                contentDescription = null,
-                                tint = theme.quaternaryColor,
-                                modifier = Modifier.size(20.dp)
+                    )
+                    .padding(top = it.calculateTopPadding())
+                    .noRippleClickable {
+                        keyboard?.hide()
+                    },
+            ) {
+                CustomTopBar(
+                    backgroundColors = listOf(Color.Transparent, Color.Transparent),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp),
+                    startComposable = {
+                        BorderIconButton(
+                            modifier = Modifier
+                                .bounceClick {
+                                    println("popped: ${navController.popBackStack()}")
+                                },
+                            iconComposable = {
+                                Icon(
+                                    Icons.Filled.KeyboardArrowLeft,
+                                    contentDescription = null,
+                                    tint = theme.quaternaryColor
+                                )
+                            },
+                        )
+                    },
+                    endComposable = {
+                    },
+                    midComposable = {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = WhiteColor,
+                                            fontFamily = nunitoFontFamily
+                                        )
+                                    ) {
+                                        append("start a focus session")
+                                    }
+                                },
+                                style = CustomTextStyle
                             )
                         }
-                    },
-                    title = "\uD83D\uDEAB   blocked apps",
-                    onClick = {
-                        appBlocker.selectApps(
-                            exclude = true,
-                            onAppsSelected = {
-                                selectedAppTokens = it
-                            }
-                        )
-                    },
-                    subtitle = if (selectedAppTokens.isNotEmpty()) "except: ${selectedAppTokens.size} apps" else "",
-                    modifier = Modifier
-                        .weight(0.55f)
+                    }
                 )
 
-                // Settings Section
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = theme.quaternaryColor,
+                                fontFamily = nunitoFontFamily
+                            )
+                        ) {
+                            append("every distraction is a betrayal your future self will remember")
+                        }
+                    },
+                    style = CustomTextStyle,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                )
+
+
+                AnimatedGlow(
+                    modifier = Modifier
+                        .padding(horizontal = 60.dp),
+                    showProgress = state.timerState != TimerState.IDLE,
+                    progress = { animatedProgress }
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 30.dp)
+                    .align(Alignment.BottomCenter)
+                    .addStandardHorizontalPadding(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                AnimatedVisibility(
+                    state.timerState != TimerState.IDLE,
+                    enter = fadeIn(
+                        animationSpec = tween(durationMillis = 500)
+                    ),
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                ) {
+                    TimerDisplay(
+                        minutes = minutes,
+                        seconds = seconds,
+                        endTimeText = "ends at ${calculateEndTimeKotlinx(state.time)}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                // Time Picker
+                AnimatedVisibility(
+                    state.timerState == TimerState.IDLE,
+                    enter = fadeIn(
+                        animationSpec = tween(durationMillis = 500)
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(durationMillis = 500)
+                    )
+                ) {
+                    if (selectedScheduleType == ScheduleType.LATER) {
+                        SchedulePickerRow(
+                            startDate = fromDate,
+                            endDate = endDate,
+                            onEndPicked = {
+                                endDate = it
+                            },
+                            onStartPicked = {
+                                fromDate = it
+                            }
+                        )
+                    } else {
+                        TimePickerRow(
+                            time = state.time,
+                            onTimeChange = {
+                                viewModel.updateTime(it)
+                            }
+                        )
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    FocusOptionRow(
+                        end = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "${selectedAppTokens.size}",
+                                    style = CustomTextStyle.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = RedColor
+                                    )
+                                )
+
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowRight,
+                                    contentDescription = null,
+                                    tint = theme.quaternaryColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        },
+                        title = "\uD83D\uDEAB   blocked apps",
+                        onClick = {
+                            viewModel.appBlocker.selectApps(
+                                exclude = true,
+                                onAppsSelected = {
+                                    selectedAppTokens = it
+                                }
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(0.55f)
+                    )
+
+                    // Settings Section
+                    FocusOptionRow(
+                        end = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = "all",
+                                    style = CustomTextStyle.copy(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = theme.quaternaryColor
+                                    )
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowRight,
+                                    contentDescription = null,
+                                    tint = theme.quaternaryColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        },
+                        title = "settings",
+                        modifier = Modifier
+                            .weight(0.45f)
+                    )
+                }
+
                 FocusOptionRow(
                     end = {
                         Row(
@@ -315,7 +373,7 @@ fun CreateFocusScreen(
                             horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             Text(
-                                text = "all",
+                                text = "hard",
                                 style = CustomTextStyle.copy(
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
@@ -325,61 +383,165 @@ fun CreateFocusScreen(
                             Icon(
                                 imageVector = Icons.Filled.KeyboardArrowRight,
                                 contentDescription = null,
-                                tint =  theme.quaternaryColor,
+                                tint = theme.quaternaryColor,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     },
-                    title = "settings",
+                    titleIcon = {
+                        AnimatedLogo(14)
+                    },
+                    title = "focus mode",
                     modifier = Modifier
-                        .weight(0.45f)
                 )
-            }
 
-            FocusOptionRow(
-                end = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = "hard",
-                            style = CustomTextStyle.copy(
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = theme.quaternaryColor
-                            )
-                        )
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint =  theme.quaternaryColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                },
-                titleIcon = {
-                    AnimatedLogo(14)
-                },
-                title = "focus mode",
-                modifier = Modifier
-            )
-
-            CustomButton(
-                type = ButtonDto.ButtonType.PRIMARY_BUTTON,
-                text = if (selectedScheduleType == ScheduleType.NOW) "start timer" else "schedule",
-                modifier = Modifier,
-                startIconComposable = {
-                    if (selectedScheduleType == ScheduleType.NOW) {
-                        Icon(
-                            Icons.Filled.PlayArrow,
-                            contentDescription = null,
-                            tint = WhiteColor,
-                            modifier = Modifier
-                                .size(20.dp)
-                        )
-                    }
+                if (state.timerState == TimerState.RUNNING || state.timerState == TimerState.PAUSED) {
+                    CustomButton(
+                        type = ButtonDto.ButtonType.TERTIARY_BUTTON,
+                        text = if (state.timerState == TimerState.RUNNING) "pause the session" else "resume the session",
+                        modifier = Modifier,
+                        startIconComposable = {
+                            if (state.timerState == TimerState.RUNNING) {
+                                Image(
+                                    imageVector = vectorResource(Res.drawable.pause),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(14.dp)
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Filled.PlayArrow,
+                                    contentDescription = null,
+                                    tint = Color(0xFF121212),
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                )
+                            }
+                        },
+                        onClick = {
+                            if (state.timerState == TimerState.RUNNING) {
+                                viewModel.pauseTimer()
+                            } else {
+                                viewModel.resumeTimer()
+                            }
+                        },
+                        backgroundColor = WhiteColor,
+                        borderColor = WhiteColor,
+                        textColor = Color(0xFF121212)
+                    )
                 }
+
+
+                if (state.timerState == TimerState.IDLE) {
+                    CustomButton(
+                        type = ButtonDto.ButtonType.PRIMARY_BUTTON,
+                        text = "start timer",
+                        modifier = Modifier,
+                        startIconComposable = {
+                            if (selectedScheduleType == ScheduleType.NOW) {
+                                Icon(
+                                    Icons.Filled.PlayArrow,
+                                    contentDescription = null,
+                                    tint = WhiteColor,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                )
+                            }
+                        },
+                        onClick = {
+                            viewModel.startTimer(state.time)
+                        }
+                    )
+                }
+
+                if (state.timerState == TimerState.RUNNING || state.timerState == TimerState.PAUSED) {
+                    CustomButton(
+                        type = ButtonDto.ButtonType.SECONDARY_BUTTON,
+                        text = "stop",
+                        modifier = Modifier,
+                        startIconComposable = {
+                            Image(
+                                imageVector = vectorResource(Res.drawable.stop),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(16.dp)
+                            )
+                        },
+                        onClick = {
+                            viewModel.stopTimer()
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun AnimatedGlow(
+    showProgress: Boolean,
+    progress: () -> Float = { 0f },
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 5000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    val opacity by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 5000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(
+                Res.drawable.glow
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    this.alpha = opacity
+                }
+        )
+
+        AnimatedLogo(
+            size = 110,
+            modifier = Modifier
+                .graphicsLayer {
+                    this.rotationZ = rotation
+                }
+                .bounceClick {},
+            showBorder = true
+        )
+
+        if (showProgress) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(150.dp)
+                    .graphicsLayer {
+                        this.scaleX = -1f
+                    },
+                progress = progress,
+                trackColor = WhiteColor.copy(0.3f),
+                strokeWidth = 7.dp,
+                color = WhiteColor,
+                gapSize = 0.dp
             )
         }
     }
@@ -471,113 +633,6 @@ fun SchedulePickerRow(
                 )
             )
         }
-    }
-}
-
-@Composable
-fun BorderFocusTypeButton(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val theme = LocalTheme.current
-    Box(
-        modifier = modifier
-            .bounceClick(onClick = onClick)
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                theme.secondaryButtonColor
-            )
-            .border(
-                width = 1.dp,
-                color = if (isSelected) theme.titleColor else theme.tertiaryColor,
-                shape = RoundedCornerShape(14.dp)
-            )
-            .padding(horizontal = 14.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = CustomTextStyle.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = WhiteColor
-            )
-        )
-    }
-}
-
-@Composable
-fun FocusTypeButton(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val theme = LocalTheme.current
-    Box(
-        modifier = modifier
-            .bounceClick(onClick = onClick)
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                if (isSelected) RedColor else theme.secondaryButtonColor
-            )
-            .border(
-                width = 1.dp,
-                color = if (isSelected) RedColor.copy(alpha = 0.3f) else theme.tertiaryColor,
-                shape = RoundedCornerShape(14.dp)
-            )
-            .padding(horizontal = 14.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = CustomTextStyle.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = WhiteColor
-            )
-        )
-    }
-}
-
-@Composable
-fun FocusSessionNameInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val theme = LocalTheme.current
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Input field with icon and placeholder
-        DashedInputField(
-            value = value,
-            onValueChange = onValueChange,
-            icon = {
-                Icon(
-                    Icons.Filled.Edit,
-                    contentDescription = null,
-                    tint = WhiteColor,
-                    modifier = Modifier
-                        .size(16.dp)
-                )
-            }
-        )
-        // Example text
-        Text(
-            text = "ex: my work session, my gym session",
-            style = CustomTextStyle.copy(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = theme.quaternaryColor
-            ),
-            modifier = Modifier
-                .padding(start = 8.dp)
-        )
     }
 }
 

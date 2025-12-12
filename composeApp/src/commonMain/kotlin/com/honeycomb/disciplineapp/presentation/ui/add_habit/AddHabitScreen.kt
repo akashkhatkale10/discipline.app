@@ -744,6 +744,19 @@ fun LocalDateTime.formatToReadableDateTime(): String {
     return "$day$suffix ${month.take(3)} $hour12:$minute $amPm"
 }
 
+fun LocalDateTime.formatToTime(): String {
+    val hour = this.hour
+    val minute = this.minute.toString().padStart(2, '0')
+    val amPm = if (hour < 12) "am" else "pm"
+    val hour12 = when {
+        hour == 0 -> 12
+        hour > 12 -> hour - 12
+        else -> hour
+    }
+
+    return "$hour12:$minute $amPm"
+}
+
 @Composable
 private fun SelectionFieldBlock(
     viewModel: AddHabitViewModel,

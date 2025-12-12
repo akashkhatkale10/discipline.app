@@ -36,8 +36,8 @@ fun App() {
         Scaffold {
             NavHost(
                 modifier = Modifier
-                    .background(theme.backgroundColorGradient.first())
-                    .padding(top = it.calculateTopPadding() ),
+                    .background(theme.backgroundColorGradient.first()),
+//                    .padding(top = it.calculateTopPadding() ),
                 navController = navController,
                 startDestination = Screen.SplashScreenRoute
             ) {
