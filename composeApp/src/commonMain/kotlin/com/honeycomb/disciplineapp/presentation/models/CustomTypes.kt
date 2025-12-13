@@ -3,8 +3,8 @@ package com.honeycomb.disciplineapp.presentation.models
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
 import com.eygraber.uri.UriCodec
-import com.honeycomb.disciplineapp.data.dto.HabitDataDto
 import com.honeycomb.disciplineapp.data.dto.OnboardingDto
+import com.honeycomb.disciplineapp.presentation.ui.focus_app.CreateFocusState
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -30,23 +30,23 @@ val OnboardingScreenType = object : NavType<OnboardingDto>(
 
 }
 
-val HabitDataScreenType = object : NavType<HabitDataDto>(
+val CreateFocusStateType = object : NavType<CreateFocusState>(
     isNullableAllowed = false
 ) {
-    override fun get(bundle: Bundle, key: String): HabitDataDto? {
-        return Json.decodeFromString<HabitDataDto>(bundle.getString(key) ?: return null)
+    override fun get(bundle: Bundle, key: String): CreateFocusState? {
+        return Json.decodeFromString<CreateFocusState>(bundle.getString(key) ?: return null)
     }
 
-    override fun parseValue(value: String): HabitDataDto {
-        return Json.decodeFromString<HabitDataDto>(UriCodec.decode(value))
+    override fun parseValue(value: String): CreateFocusState {
+        return Json.decodeFromString<CreateFocusState>(UriCodec.decode(value))
     }
 
-    override fun put(bundle: Bundle, key: String, value: HabitDataDto) {
-        val serialized = Json.encodeToString<HabitDataDto>(value)
+    override fun put(bundle: Bundle, key: String, value: CreateFocusState) {
+        val serialized = Json.encodeToString<CreateFocusState>(value)
         bundle.putString(key, serialized)
     }
 
-    override fun serializeAsValue(value: HabitDataDto): String {
-        return UriCodec.encode(Json.encodeToString<HabitDataDto>(value))
+    override fun serializeAsValue(value: CreateFocusState): String {
+        return UriCodec.encode(Json.encodeToString<CreateFocusState>(value))
     }
 }

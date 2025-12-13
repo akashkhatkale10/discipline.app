@@ -35,17 +35,3 @@ actual fun OnboardingUsageScreen(
         }
     )
 }
-
-@Composable
-actual fun SelectedAppsIconView(
-    tokens: List<String>,
-    modifier: Modifier,
-) {
-    val factory = LocalNativeViewFactory.current
-    UIKitViewController(
-        modifier = modifier,
-        factory = {
-            factory.createSelectedAppsIconView(tokens)
-        }
-    )
-}

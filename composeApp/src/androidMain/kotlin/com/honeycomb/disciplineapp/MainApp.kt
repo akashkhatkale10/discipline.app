@@ -3,6 +3,7 @@ package com.honeycomb.disciplineapp
 import android.app.Application
 import android.content.Context
 import com.honeycomb.disciplineapp.data.di.dataModule
+import com.honeycomb.disciplineapp.di.databaseModule
 import com.honeycomb.disciplineapp.presentation.di.viewModels
 import com.honeycomb.disciplineapp.presentation.focus_app.data_store.BlockedAppsStore
 import com.honeycomb.disciplineapp.presentation.focus_app.data_store.BlockedWebsitesStore
@@ -24,7 +25,7 @@ class MainApp : Application() {
 
         startKoin {
             modules(
-                viewModels + dataModule
+                viewModels + dataModule + databaseModule
             )
         }
     }

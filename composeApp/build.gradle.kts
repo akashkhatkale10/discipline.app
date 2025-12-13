@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.googleServices)
     alias(libs.plugins.swiftklib)
     id("kotlin-parcelize")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -34,6 +36,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            linkerOpts.add("-lsqlite3")
         }
 
         iosTarget.compilations {
@@ -44,14 +47,6 @@ kotlin {
             }
         }
     }
-//
-//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-//        compilations["main"].cinterops.create("familycontrols") {
-//            defFile(project.file("src/nativeInterop/cinterop/familycontrols.def"))
-//            packageName("familycontrols") // This becomes your import prefix
-//        }
-//    }
-
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -96,12 +91,18 @@ kotlin {
             // date time
             implementation(libs.kotlinx.datetime)
 
+            // room
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+
             // firebase
             val version = "2.4.0"
             implementation("dev.gitlive:firebase-firestore:$version") // This line
             implementation("dev.gitlive:firebase-auth:$version") // This line
             implementation("dev.gitlive:firebase-common:$version")// This line
             implementation("dev.gitlive:firebase-functions:$version")// This line
+        }
+        iosMain.dependencies {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -142,6 +143,11 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    ksp(libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
 }
 
 swiftklib {
@@ -151,3 +157,6 @@ swiftklib {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}

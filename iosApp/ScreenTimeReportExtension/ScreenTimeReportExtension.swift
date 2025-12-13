@@ -67,13 +67,14 @@ struct PhoneUsageStatsModel {
         // MARK: - Parse DeviceActivity Data
         for await activityData in data {
             
+            
             for await segment in activityData.activitySegments {
                 pickups += segment.totalPickupsWithoutApplicationActivity
                 for await category in segment.categories {
-                
 
                     // Capture social apps (or filter using your own social list)
                     for await appActivity in category.applications {
+
                         pickups += appActivity.numberOfPickups
                         let bundle = appActivity.application.bundleIdentifier ?? "unknown"
                         let name = appActivity.application.localizedDisplayName

@@ -33,7 +33,7 @@ class IOSNativeViewFactory: NativeViewFactory {
             state: state,
             appBlocker: appBlocker,
             exclude: true
-        ) {applications, selection in
+        ) {
              
         }.frame(maxWidth: .infinity, maxHeight: 100)
         return UIHostingController(rootView: report)

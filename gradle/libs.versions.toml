@@ -26,6 +26,9 @@ datetime="0.6.0"
 uiToolingPreviewAndroid = "1.8.1"
 material = "1.13.0"
 swiftklib = "0.6.4"
+room = "2.7.1"
+ksp = "2.2.20-2.0.4"
+sqlite = "2.6.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -58,6 +61,10 @@ coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.re
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 [plugins]
 composeHotReload = {id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload"}
@@ -70,4 +77,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 googleServices = { id = "com.google.gms.google-services", version.ref ="googleServices" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 swiftklib = { id = "io.github.ttypic.swiftklib", version.ref = "swiftklib" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }

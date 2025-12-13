@@ -1,7 +1,5 @@
 package com.honeycomb.disciplineapp.presentation.ui.focus_app
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -9,8 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,12 +59,14 @@ import com.honeycomb.disciplineapp.presentation.utils.bounceClick
 import com.honeycomb.disciplineapp.presentation.utils.dashedBorder
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.graphicsLayer
@@ -76,13 +74,12 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
-import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
+import com.honeycomb.disciplineapp.presentation.Screen
 import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToReadableDateTime
 import com.honeycomb.disciplineapp.presentation.ui.common.pickDate
+import com.honeycomb.disciplineapp.presentation.utils.Constants
 import com.honeycomb.disciplineapp.presentation.utils.LocalPlatformContext
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
-import com.honeycomb.disciplineapp.presentation.utils.now
-import com.honeycomb.disciplineapp.presentation.utils.plus
 import disciplineapp.composeapp.generated.resources.Res
 import disciplineapp.composeapp.generated.resources.glow
 import disciplineapp.composeapp.generated.resources.pause
@@ -96,34 +93,24 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 
-enum class FocusType {
-    SOFT, HARD
-}
-
-enum class ScheduleType {
-    NOW, LATER
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class, KoinExperimentalAPI::class)
 @Composable
 fun CreateFocusScreen(
+    viewModel: CreateFocusViewModel,
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = koinViewModel<CreateFocusViewModel>()
     val state by viewModel.state.collectAsState()
     val minutes by viewModel.minutes.collectAsState()
     val seconds by viewModel.seconds.collectAsState()
     val remainingSeconds by viewModel.timer.remainingSeconds.collectAsState()
     val theme = LocalTheme.current
     var selectedScheduleType by remember { mutableStateOf(ScheduleType.NOW) }
-    var fromDate by remember { mutableStateOf(LocalDateTime.now()) }
-    var endDate by remember { mutableStateOf(LocalDateTime.now().plus(15, DateTimeUnit.MINUTE)) }
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
 
-    var selectedAppTokens: List<AppInfo> by remember {
-        mutableStateOf(emptyList())
+    var selectedAppTokensSize: Int by remember {
+        mutableStateOf(0)
     }
 
     val bgAnimProgress by animateFloatAsState(
@@ -146,6 +133,22 @@ fun CreateFocusScreen(
         Color(0xFF081717),
         bgAnimProgress
     )
+
+    LaunchedEffect(state) {
+        if (state.timerState == TimerState.COMPLETED) {
+            navController.navigate(Screen.FocusSuccessScreenRoute(
+                state = CreateFocusState(
+                    timerState = state.timerState,
+                    time = viewModel.timer.totalDurationSeconds / 60
+                )
+            )) {
+                popUpTo<Screen.CreateFocusScreenRoute> {
+                    inclusive = true
+                }
+            }
+        }
+    }
+
 
     Scaffold(
         containerColor = endColor
@@ -181,15 +184,14 @@ fun CreateFocusScreen(
                                 },
                             iconComposable = {
                                 Icon(
-                                    Icons.Filled.KeyboardArrowLeft,
+                                    Icons.Filled.KeyboardArrowDown,
                                     contentDescription = null,
                                     tint = theme.quaternaryColor
                                 )
                             },
                         )
                     },
-                    endComposable = {
-                    },
+                    endComposable = {},
                     midComposable = {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -249,53 +251,26 @@ fun CreateFocusScreen(
                     .addStandardHorizontalPadding(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                AnimatedVisibility(
-                    state.timerState != TimerState.IDLE,
-                    enter = fadeIn(
-                        animationSpec = tween(durationMillis = 500)
-                    ),
-                    modifier = Modifier
-                        .padding(bottom = 30.dp)
-                ) {
+                if (state.timerState != TimerState.IDLE) {
                     TimerDisplay(
                         minutes = minutes,
                         seconds = seconds,
-                        endTimeText = "ends at ${calculateEndTimeKotlinx(state.time)}",
+                        endTimeText = "ends at ${calculateEndTimeKotlinx(remainingSeconds / 60)}",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally),
+                        title = "time remaining"
                     )
                 }
 
                 // Time Picker
-                AnimatedVisibility(
-                    state.timerState == TimerState.IDLE,
-                    enter = fadeIn(
-                        animationSpec = tween(durationMillis = 500)
-                    ),
-                    exit = fadeOut(
-                        animationSpec = tween(durationMillis = 500)
+                if (state.timerState == TimerState.IDLE) {
+                    TimePickerRow(
+                        time = state.time,
+                        onTimeChange = { t ->
+                            viewModel.updateTime(t)
+                        }
                     )
-                ) {
-                    if (selectedScheduleType == ScheduleType.LATER) {
-                        SchedulePickerRow(
-                            startDate = fromDate,
-                            endDate = endDate,
-                            onEndPicked = {
-                                endDate = it
-                            },
-                            onStartPicked = {
-                                fromDate = it
-                            }
-                        )
-                    } else {
-                        TimePickerRow(
-                            time = state.time,
-                            onTimeChange = {
-                                viewModel.updateTime(it)
-                            }
-                        )
-                    }
                 }
 
                 Row(
@@ -308,7 +283,7 @@ fun CreateFocusScreen(
                                 horizontalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
-                                    text = "${selectedAppTokens.size}",
+                                    text = "$selectedAppTokensSize",
                                     style = CustomTextStyle.copy(
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium,
@@ -329,7 +304,7 @@ fun CreateFocusScreen(
                             viewModel.appBlocker.selectApps(
                                 exclude = true,
                                 onAppsSelected = {
-                                    selectedAppTokens = it
+                                    selectedAppTokensSize = it.size
                                 }
                             )
                         },
@@ -360,7 +335,7 @@ fun CreateFocusScreen(
                                 )
                             }
                         },
-                        title = "settings",
+                        title = "\uD83D\uDEAB   settings",
                         modifier = Modifier
                             .weight(0.45f)
                     )
@@ -438,15 +413,13 @@ fun CreateFocusScreen(
                         text = "start timer",
                         modifier = Modifier,
                         startIconComposable = {
-                            if (selectedScheduleType == ScheduleType.NOW) {
-                                Icon(
-                                    Icons.Filled.PlayArrow,
-                                    contentDescription = null,
-                                    tint = WhiteColor,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                )
-                            }
+                            Icon(
+                                Icons.Filled.PlayArrow,
+                                contentDescription = null,
+                                tint = WhiteColor,
+                                modifier = Modifier
+                                    .size(20.dp)
+                            )
                         },
                         onClick = {
                             viewModel.startTimer(state.time)
@@ -482,7 +455,9 @@ fun CreateFocusScreen(
 fun AnimatedGlow(
     showProgress: Boolean,
     progress: () -> Float = { 0f },
-    modifier: Modifier = Modifier
+    midComposable: @Composable () -> Unit = {},
+    modifier: Modifier = Modifier,
+    size: Int = 110
 ) {
     val infiniteTransition = rememberInfiniteTransition()
     val rotation by infiniteTransition.animateFloat(
@@ -520,7 +495,7 @@ fun AnimatedGlow(
         )
 
         AnimatedLogo(
-            size = 110,
+            size = size,
             modifier = Modifier
                 .graphicsLayer {
                     this.rotationZ = rotation
@@ -544,6 +519,8 @@ fun AnimatedGlow(
                 gapSize = 0.dp
             )
         }
+
+        midComposable()
     }
 }
 
@@ -714,6 +691,7 @@ fun FocusOptionRow(
     ) {
         Box(
             modifier = Modifier
+                .height(36.dp)
                 .bounceClick(onClick = onClick)
                 .fillMaxWidth()
                 .background(
@@ -725,8 +703,8 @@ fun FocusOptionRow(
                     color = theme.tertiaryColor,
                     shape = RoundedCornerShape(14.dp)
                 )
-                .padding( vertical = 12.dp)
-                .padding( end = 8.dp, start = 12.dp)
+                .padding(end = 8.dp, start = 12.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             Row(
                 modifier = Modifier
@@ -848,7 +826,7 @@ fun TimePickerRow(
             modifier = Modifier
                 .width(50.dp)
                 .bounceClick {
-                    if (time > 15) {
+                    if (time > Constants.getMinimumTime()) {
                         onTimeChange(time - 5)
                     }
                 }
@@ -929,7 +907,8 @@ fun TimePickerRow(
 @Preview
 fun CreateFocusScreenPreview() {
     CreateFocusScreen(
-        navController = rememberNavController()
+        navController = rememberNavController(),
+        viewModel = koinViewModel<CreateFocusViewModel>()
     )
 }
 

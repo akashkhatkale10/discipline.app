@@ -27,7 +27,7 @@ import AVFoundation
             state: state,
             appBlocker: appBlocker,
             exclude: exclude,
-            onSave: {applications, selection in
+            onSave: {
                 let result = self.state.activitySelection.applicationTokens.map { app in ""}
                 let result2 = self.state.activitySelection.webDomainTokens.map { app in ""}
                 selectApps(result + result2)
@@ -81,12 +81,12 @@ struct ProfileEditorView: View {
     @ObservedObject var state: AppBlockerState
     let appBlocker: AppBlockerUtil
     let exclude: Bool
-    let onSave: (Set<Application>, FamilyActivitySelection) -> Void
+    let onSave: () -> Void
     
     @State var showSheet: Bool = true
     
     
-    init(state: AppBlockerState, appBlocker: AppBlockerUtil, exclude: Bool, onSave: @escaping (Set<Application>, FamilyActivitySelection) -> Void) {
+    init(state: AppBlockerState, appBlocker: AppBlockerUtil, exclude: Bool, onSave: @escaping () -> Void) {
         self.state = state
         self.appBlocker = appBlocker
         self.exclude = exclude
@@ -110,7 +110,9 @@ struct ProfileEditorView: View {
         .onChange(of: state.activitySelection) { newSelection in
             state.activitySelection = newSelection
         }
-        .sheet(isPresented: $showSheet, onDismiss: {}) {
+        .sheet(isPresented: $showSheet, onDismiss: {
+            onSave()
+        }) {
             AppsBlockedBottomSheet(
                 onAddClick: {
                     state.isPickerPresented = true

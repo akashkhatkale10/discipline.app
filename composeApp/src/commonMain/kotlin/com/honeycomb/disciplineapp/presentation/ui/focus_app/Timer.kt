@@ -33,6 +33,7 @@ import kotlinx.datetime.toLocalDateTime
 fun TimerDisplay(
     minutes: Int,
     seconds: Int,
+    title: String,
     endTimeText: String,
     modifier: Modifier = Modifier
 ) {
@@ -45,14 +46,16 @@ fun TimerDisplay(
     ) {
 
         // Top label
-        Text(
-            text = "time remaining",
-            style = CustomTextStyle.copy(
-                color = WhiteColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            ),
-        )
+        if (title.isNotEmpty()) {
+            Text(
+                text = title,
+                style = CustomTextStyle.copy(
+                    color = WhiteColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+            )
+        }
 
         // Timer boxes
         Row(
@@ -60,7 +63,7 @@ fun TimerDisplay(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            TimeBox(value = minutes)
+            TimeBox(value = minutes, suffix = "m")
             Text(
                 text = ":",
                 style = CustomTextStyle.copy(
@@ -69,26 +72,32 @@ fun TimerDisplay(
                     fontWeight = FontWeight.Medium
                 ),
             )
-            TimeBox(value = seconds)
+            TimeBox(value = seconds, suffix = "s")
         }
 
         // End time text
-        Text(
-            text = endTimeText,
-            style = CustomTextStyle.copy(
-                color = WhiteColor.copy(alpha = 0.3f),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            ),
-        )
+        if (endTimeText.isNotEmpty()) {
+            Text(
+                text = endTimeText,
+                style = CustomTextStyle.copy(
+                    color = WhiteColor.copy(alpha = 0.3f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+            )
+        }
     }
 }
 
 @Composable
-private fun TimeBox(value: Int) {
+private fun TimeBox(
+    value: Int,
+    suffix: String = "",
+    modifier: Modifier = Modifier,
+) {
     val theme = LocalTheme.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(width = 70.dp, height = 70.dp)
             .border(
                 width = 1.dp,
@@ -102,10 +111,10 @@ private fun TimeBox(value: Int) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "${if (value < 10) "0" else ""}$value",
+            text = "${if (value < 10) "0" else ""}$value$suffix",
             style = CustomTextStyle.copy(
                 color = WhiteColor,
-                fontSize = 30.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Medium
             ),
         )
