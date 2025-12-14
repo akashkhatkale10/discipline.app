@@ -74,7 +74,7 @@ struct PhoneUsageStatsModel {
 
                     // Capture social apps (or filter using your own social list)
                     for await appActivity in category.applications {
-
+                        
                         pickups += appActivity.numberOfPickups
                         let bundle = appActivity.application.bundleIdentifier ?? "unknown"
                         let name = appActivity.application.localizedDisplayName

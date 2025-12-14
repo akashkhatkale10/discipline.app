@@ -23,6 +23,12 @@ actual class AppBlocker {
         durationMinutes: Long,
         onPermissionSuccess: () -> Unit
     ) {
+        // todo remove
+        onPermissionSuccess()
+        manager.startBlockingWithTime(
+            time = durationMinutes
+        )
+        return
         requestPermission(
             onSuccess = {
                 onPermissionSuccess()

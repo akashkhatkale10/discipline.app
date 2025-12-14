@@ -25,20 +25,36 @@ struct ContentView: View {
 }
 
 class IOSNativeViewFactory: NativeViewFactory {
+    
     let appBlocker = AppBlockerUtil()
     let state = AppBlockerState()
     
-    func createSelectedAppsIconView(tokens: [String]) -> UIViewController {
-        let report = ProfileEditorView(
-            state: state,
-            appBlocker: appBlocker,
-            exclude: true
-        ) {
-             
-        }.frame(maxWidth: .infinity, maxHeight: 100)
+    func createSuccessScreenUsage(startTime: Int64, endTime: Int64) -> UIViewController {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy, hh:mm a"
+        let startDate = Date(timeIntervalSince1970: TimeInterval(startTime) / 1000)
+        let endDate = Date(timeIntervalSince1970: TimeInterval(endTime) / 1000)
+        
+        print("start date: \(formatter.string(from: startDate))")
+        print("end date: \(formatter.string(from: endDate))")
+//
+        let interval = DateInterval(
+           start: startDate,
+           end: endDate
+        )
+
+        let filter = DeviceActivityFilter(
+            segment: .hourly(during: interval), // or .daily if you want aggregation
+            users: .all,
+            devices: .init([.iPhone])
+        )
+        let report = DeviceActivityReport(
+            DeviceActivityReport.Context.successScreen,
+            filter: filter
+        )
+            .frame(maxWidth: .infinity, maxHeight: 500)
         return UIHostingController(rootView: report)
     }
-    
     
     func createOnboardingUsageScreen() -> UIViewController {
         let calendar = Calendar.current

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -70,21 +71,21 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
+import com.honeycomb.disciplineapp.presentation.focus_app.utils.getScreenWidth
+import com.honeycomb.disciplineapp.presentation.ui.add_habit.formatToTime
 import com.honeycomb.disciplineapp.presentation.utils.noRippleClickable
 import kotlinx.coroutines.delay
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
-
-enum class FocusType {
-    SOFT, HARD
-}
 
 enum class ScheduleType {
     NOW, LATER
@@ -98,6 +99,7 @@ fun FocusSuccessScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
+    val width = getScreenWidth()
     val theme = LocalTheme.current
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -268,12 +270,71 @@ fun FocusSuccessScreen(
                                 TimerDisplay(
                                     minutes = state.time,
                                     seconds = 0,
-                                    endTimeText = "${state.timerState}",
+                                    endTimeText = "",
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .align(Alignment.CenterHorizontally),
                                     title = ""
                                 )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    state.startTimestamp?.toLocalDateTime(TimeZone.currentSystemDefault())?.let {
+                                        Text(
+                                            text = it.formatToTime(),
+                                            style = CustomTextStyle.copy(
+                                                color = WhiteColor,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Medium
+                                            ),
+                                        )
+                                    }
+
+                                    Spacer(
+                                        modifier = Modifier
+                                            .dashedBorder(
+                                                strokeWidth = 3.dp,
+                                                color = WhiteColor.copy(0.3f),
+                                                cornerRadius = 10.dp,
+                                            )
+                                            .weight(1f)
+                                    )
+
+                                    state.endTimestamp?.toLocalDateTime(TimeZone.currentSystemDefault())?.let {
+                                        Text(
+                                            text = it.formatToTime(),
+                                            style = CustomTextStyle.copy(
+                                                color = WhiteColor,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Medium
+                                            ),
+                                        )
+                                    }
+                                }
+
+//                                Instant.fromEpochMilliseconds(
+//                                    Clock.System.now().toEpochMilliseconds() - 7200000
+//                                ).toLocalDateTime(TimeZone.currentSystemDefault()).time.apply {
+//                                    println(
+//                                        "start time: ${hour}, ${minute}, ${second}"
+//                                    )
+//                                }
+//                                Instant.fromEpochMilliseconds(
+//                                    Clock.System.now().toEpochMilliseconds()
+//                                ).toLocalDateTime(TimeZone.currentSystemDefault()).time.apply {
+//                                    println(
+//                                        "end time: ${hour}, ${minute}, ${second}"
+//                                    )
+//                                }
+//                                SuccessScreenUsageScreen(
+//                                    startTime = Clock.System.now().toEpochMilliseconds() - 7200000,
+//                                    endTime = Clock.System.now().toEpochMilliseconds(),
+//                                    modifier = Modifier
+//                                        .padding(top = 20.dp)
+//                                        .width(width)
+//                                        .height(500.dp)
+//                                )
                             }
                         }
                     }

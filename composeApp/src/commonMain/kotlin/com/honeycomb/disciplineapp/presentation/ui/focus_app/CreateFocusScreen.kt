@@ -116,11 +116,11 @@ fun CreateFocusScreen(
     }
 
     val bgAnimProgress by animateFloatAsState(
-        targetValue = if (state.timerState == TimerState.IDLE) 0f else 1f,
+        targetValue = if (state?.timerState == TimerState.IDLE) 0f else 1f,
         animationSpec = tween(durationMillis = 500, easing = LinearEasing)
     )
     val animatedProgress by animateFloatAsState(
-        targetValue = remainingSeconds / (state.time * 60f),
+        targetValue = remainingSeconds / ((state?.time ?: Constants.getMinimumTime()) * 60f),
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
     )
 
@@ -137,9 +137,9 @@ fun CreateFocusScreen(
     )
 
     LaunchedEffect(state) {
-        if (state.timerState == TimerState.COMPLETED) {
+        if (state?.timerState == TimerState.COMPLETED || state?.timerState == TimerState.STOPPED) {
             navController.navigate(Screen.FocusSuccessScreenRoute(
-                state = state
+                state = state!!
             )) {
                 popUpTo<Screen.CreateFocusScreenRoute> {
                     inclusive = true
@@ -238,7 +238,7 @@ fun CreateFocusScreen(
                 AnimatedGlow(
                     modifier = Modifier
                         .padding(horizontal = 60.dp),
-                    showProgress = state.timerState != TimerState.IDLE,
+                    showProgress = state?.timerState != TimerState.IDLE,
                     progress = { animatedProgress }
                 )
             }
@@ -250,11 +250,11 @@ fun CreateFocusScreen(
                     .addStandardHorizontalPadding(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (state.timerState != TimerState.IDLE) {
+                if (state?.timerState == TimerState.RUNNING) {
                     TimerDisplay(
                         minutes = minutes,
                         seconds = seconds,
-                        endTimeText = "ends at ${calculateEndTimeKotlinx(remainingSeconds / 60)}",
+                        endTimeText = calculateEndTimeKotlinx(state?.time ?: Constants.getMinimumTime()),
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally),
@@ -263,9 +263,20 @@ fun CreateFocusScreen(
                 }
 
                 // Time Picker
-                if (state.timerState == TimerState.IDLE) {
+                if (state?.timerState == TimerState.IDLE) {
+                    Text(
+                        text = calculateEndTimeKotlinx(state?.time ?: Constants.getMinimumTime()),
+                        style = CustomTextStyle.copy(
+                            color = WhiteColor.copy(alpha = 0.3f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+
                     TimePickerRow(
-                        time = state.time,
+                        time = state?.time ?: Constants.getMinimumTime(),
                         onTimeChange = { t ->
                             viewModel.updateTime(t)
                         }
@@ -369,13 +380,13 @@ fun CreateFocusScreen(
                     modifier = Modifier
                 )
 
-                if (state.timerState == TimerState.RUNNING || state.timerState == TimerState.PAUSED) {
+                if (state?.timerState == TimerState.RUNNING || state?.timerState == TimerState.PAUSED) {
                     CustomButton(
                         type = ButtonDto.ButtonType.TERTIARY_BUTTON,
-                        text = if (state.timerState == TimerState.RUNNING) "pause the session" else "resume the session",
+                        text = if (state?.timerState == TimerState.RUNNING) "pause the session" else "resume the session",
                         modifier = Modifier,
                         startIconComposable = {
-                            if (state.timerState == TimerState.RUNNING) {
+                            if (state?.timerState == TimerState.RUNNING) {
                                 Image(
                                     imageVector = vectorResource(Res.drawable.pause),
                                     contentDescription = null,
@@ -393,7 +404,7 @@ fun CreateFocusScreen(
                             }
                         },
                         onClick = {
-                            if (state.timerState == TimerState.RUNNING) {
+                            if (state?.timerState == TimerState.RUNNING) {
                                 viewModel.pauseTimer()
                             } else {
                                 viewModel.resumeTimer()
@@ -406,7 +417,7 @@ fun CreateFocusScreen(
                 }
 
 
-                if (state.timerState == TimerState.IDLE) {
+                if (state?.timerState == TimerState.IDLE) {
                     CustomButton(
                         type = ButtonDto.ButtonType.PRIMARY_BUTTON,
                         text = "start timer",
@@ -424,11 +435,11 @@ fun CreateFocusScreen(
                             appBlockerViewModel.appBlocker.startBlocking(
                                 context = context,
                                 packageNames = emptyList(),
-                                durationMinutes = state.time.toLong(),
+                                durationMinutes = (state?.time ?: Constants.getMinimumTime()).toLong(),
                                 onPermissionSuccess = {
                                     viewModel.startTimer(
                                         context = context,
-                                        time = state.time
+                                        time = state?.time ?: Constants.getMinimumTime()
                                     )
                                 }
                             )
@@ -436,7 +447,7 @@ fun CreateFocusScreen(
                     )
                 }
 
-                if (state.timerState == TimerState.RUNNING || state.timerState == TimerState.PAUSED) {
+                if (state?.timerState == TimerState.RUNNING || state?.timerState == TimerState.PAUSED) {
                     CustomButton(
                         type = ButtonDto.ButtonType.SECONDARY_BUTTON,
                         text = "stop",

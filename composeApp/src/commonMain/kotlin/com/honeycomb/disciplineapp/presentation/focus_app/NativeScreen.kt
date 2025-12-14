@@ -13,3 +13,10 @@ expect fun NativeScreen(
 expect fun OnboardingUsageScreen(
     modifier: Modifier
 )
+
+@Composable
+expect fun SuccessScreenUsageScreen(
+    startTime: Long,
+    endTime: Long,
+    modifier: Modifier
+)

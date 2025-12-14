@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.honeycomb.disciplineapp.data.repository.TimerRepository
 import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
 import com.honeycomb.disciplineapp.presentation.utils.Constants
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -19,13 +21,14 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     private val timerRepository: TimerRepository by inject()
 
-    private val _state: MutableStateFlow<CreateFocusState> = MutableStateFlow(CreateFocusState())
-    val state: StateFlow<CreateFocusState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<CreateFocusState?> = MutableStateFlow(null)
+    val state: StateFlow<CreateFocusState?> = _state.asStateFlow()
 
-    val onCompleted = {
+    val onCompleted: (Long) -> Job = { endTime ->
         _state.update {
-            it.copy(
+            it?.copy(
                 timerState = TimerState.COMPLETED,
+                endTimestamp = Instant.fromEpochMilliseconds(endTime)
             )
         }
         viewModelScope.launch {
@@ -40,14 +43,20 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     fun initVm() {
         viewModelScope.launch {
-            val persisted = timerRepository.loadTimerState() ?: return@launch
+            val persisted = timerRepository.loadTimerState() ?: run {
+                _state.value = CreateFocusState()
+                return@launch
+            }
 
             _state.update {
-                it.copy(
+                it?.copy(
                     timerState = persisted.state,
-                    time = persisted.initialDuration
+                    time = persisted.initialDuration,
+                    startTimestamp = persisted.startTimestamp
                 )
             }
+
+            println("state is: ${persisted.state}")
             when (persisted.state) {
                 TimerState.RUNNING -> {
                     persisted.startTimestamp?.let { start ->
@@ -61,24 +70,30 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
                     }
                 }
 
-                else -> {}
+                else -> {
+                    if (_state.value == null) {
+                        _state.value = CreateFocusState()
+                    }
+                }
             }
         }
     }
 
     fun updateTime(time: Int) {
         _state.update {
-            it.copy(
+            it?.copy(
                 time = time
             )
         }
     }
 
     fun startTimer(context: Any?, time: Int) {
+        val startTimestamp = Clock.System.now()
         _state.update {
-            it.copy(
+            it?.copy(
                 timerState = TimerState.RUNNING,
-                time = time
+                time = time,
+                startTimestamp = startTimestamp
             )
         }
         timer.start(time) // 15 minutes
@@ -86,7 +101,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
             timerRepository.saveTimerState(
                 TimerState.RUNNING,
                 time,
-                Clock.System.now(),
+                startTimestamp,
                 null
             )
         }
@@ -94,8 +109,9 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     fun stopTimer() {
         _state.update {
-            it.copy(
-                timerState = TimerState.STOPPED
+            it?.copy(
+                timerState = TimerState.STOPPED,
+                endTimestamp = Clock.System.now()
             )
         }
         timer.stop()
@@ -106,9 +122,11 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     fun resetTimer() {
         _state.update {
-            it.copy(
+            it?.copy(
                 timerState = TimerState.IDLE,
-                time = Constants.getMinimumTime()
+                time = Constants.getMinimumTime(),
+                startTimestamp = null,
+                endTimestamp = null
             )
         }
         viewModelScope.launch {
@@ -118,7 +136,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     fun pauseTimer() {
         _state.update {
-            it.copy(
+            it?.copy(
                 timerState = TimerState.PAUSED
             )
         }
@@ -126,7 +144,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             timerRepository.saveTimerState(
                 TimerState.PAUSED,
-                state.value.time,
+                state.value?.time  ?: Constants.getMinimumTime(),
                 null,
                 timer.remainingSeconds.value
             )
@@ -135,7 +153,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     fun resumeTimer() {
         _state.update {
-            it.copy(
+            it?.copy(
                 timerState = TimerState.RUNNING
             )
         }
@@ -143,7 +161,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch {
             timerRepository.saveTimerState(
                 TimerState.RUNNING,
-                state.value.time,
+                state.value?.time ?: Constants.getMinimumTime(),
                 Clock.System.now(),
                 null
             )
@@ -164,5 +182,7 @@ enum class TimerState {
 data class CreateFocusState(
     val timerState: TimerState = TimerState.IDLE,
     val time: Int = Constants.getMinimumTime(),
+    val startTimestamp: Instant? = null,
+    val endTimestamp: Instant? = null,
 )
 

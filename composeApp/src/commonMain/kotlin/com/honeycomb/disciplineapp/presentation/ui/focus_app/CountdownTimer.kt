@@ -12,7 +12,7 @@ import kotlin.math.max
 
 class CountdownTimer(
     private val scope: CoroutineScope,
-    private val onCompleted: () -> Job
+    private val onCompleted: (Long) -> Job
 ) {
     private var timerJob: Job? = null
     private val _remainingSeconds = MutableStateFlow(0)
@@ -75,7 +75,8 @@ class CountdownTimer(
                 _minutes.value = remaining / 60
                 _seconds.value = remaining % 60
                 if (remaining <= 0 && !isPaused) {
-                    onCompleted()
+                    val endTime = Clock.System.now().toEpochMilliseconds() + (calculateEndTime() * 1000)
+                    onCompleted(endTime)
                     stop()
                     break
                 }
@@ -90,6 +91,14 @@ class CountdownTimer(
         }
         val elapsed = (Clock.System.now() - startTimestamp!!).inWholeSeconds.toInt()
         return max(0, totalDurationSeconds - elapsed)
+    }
+
+    private fun calculateEndTime(): Int {
+        if (isPaused || startTimestamp == null) {
+            return _remainingSeconds.value
+        }
+        val elapsed = (Clock.System.now() - startTimestamp!!).inWholeSeconds.toInt()
+        return (totalDurationSeconds - elapsed)
     }
 
     fun restoreRunning(start: Instant, durationSeconds: Int) {

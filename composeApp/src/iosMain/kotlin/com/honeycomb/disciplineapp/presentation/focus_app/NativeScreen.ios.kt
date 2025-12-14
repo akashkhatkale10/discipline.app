@@ -20,7 +20,10 @@ actual fun NativeScreen(modifier: Modifier) {
 interface NativeViewFactory {
     fun createNativeScreen(): UIViewController
     fun createOnboardingUsageScreen(): UIViewController
-    fun createSelectedAppsIconView(tokens: List<String>): UIViewController
+    fun createSuccessScreenUsage(
+        startTime: Long,
+        endTime: Long
+    ): UIViewController
 }
 
 @Composable
@@ -32,6 +35,24 @@ actual fun OnboardingUsageScreen(
         modifier = modifier,
         factory = {
             factory.createOnboardingUsageScreen()
+        }
+    )
+}
+
+@Composable
+actual fun SuccessScreenUsageScreen(
+    startTime: Long,
+    endTime: Long,
+    modifier: Modifier
+) {
+    val factory = LocalNativeViewFactory.current
+    UIKitViewController(
+        modifier = modifier,
+        factory = {
+            factory.createSuccessScreenUsage(
+                startTime = startTime,
+                endTime = endTime
+            )
         }
     )
 }

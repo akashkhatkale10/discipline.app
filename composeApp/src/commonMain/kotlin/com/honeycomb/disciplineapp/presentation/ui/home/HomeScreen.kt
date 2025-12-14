@@ -34,25 +34,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.honeycomb.disciplineapp.BackgroundColor
 import com.honeycomb.disciplineapp.CustomTextStyle
-import com.honeycomb.disciplineapp.RedColor
 import com.honeycomb.disciplineapp.SubtitleTextColor
 import com.honeycomb.disciplineapp.TitleTextColor
 import com.honeycomb.disciplineapp.WhiteColor
 import com.honeycomb.disciplineapp.data.dto.ButtonDto
 import com.honeycomb.disciplineapp.nunitoFontFamily
 import com.honeycomb.disciplineapp.presentation.Screen
-import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
-import com.honeycomb.disciplineapp.presentation.focus_app.models.AppInfo
-import com.honeycomb.disciplineapp.presentation.ui.common.AnimatedLogo
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomButton
 import com.honeycomb.disciplineapp.presentation.ui.common.CustomTopBar
 import com.honeycomb.disciplineapp.presentation.ui.focus_app.CreateFocusViewModel
 import com.honeycomb.disciplineapp.presentation.ui.focus_app.TimerState
 import com.honeycomb.disciplineapp.presentation.utils.Constants.HORIZONTAL_PADDING
 import com.honeycomb.disciplineapp.presentation.utils.DataUtils.getCurrentFormattedDate
-import com.honeycomb.disciplineapp.presentation.utils.LocalTheme
 import com.honeycomb.disciplineapp.presentation.utils.addStandardHorizontalPadding
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -152,9 +146,9 @@ fun HomeScreen(
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(16.dp)
                                         ) {
-                                            if (focusState.timerState == TimerState.IDLE
-                                                || focusState.timerState == TimerState.STOPPED
-                                                || focusState.timerState == TimerState.COMPLETED) {
+                                            if (focusState == null || focusState?.timerState == TimerState.IDLE
+                                                || focusState?.timerState == TimerState.STOPPED
+                                                || focusState?.timerState == TimerState.COMPLETED) {
                                                 CustomButton(
                                                     text = "start a focus session",
                                                     startIconComposable = {

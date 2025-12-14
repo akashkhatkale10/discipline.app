@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7AAD5B2B2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 7AAD5B1F2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7AB23DC32ED349C1002567D2 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7AB23DC22ED349C1002567D2 /* FirebaseAI */; };
 		7AB23DC52ED349C1002567D2 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 7AB23DC42ED349C1002567D2 /* FirebaseAnalytics */; };
 		7AB23DC72ED349C1002567D2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7AB23DC62ED349C1002567D2 /* FirebaseAuth */; };
@@ -29,6 +30,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7AAD5B292EEEA856002ED0CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 466F396392214C824F0E6F1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7AAD5B1E2EEEA856002ED0CD;
+			remoteInfo = SuccessScreenTimeReportExtension;
+		};
 		7ABCAB4F2EE06FE30068FDBB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 466F396392214C824F0E6F1A /* Project object */;
@@ -67,6 +75,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				7ABCAB512EE06FE30068FDBB /* ScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */,
+				7AAD5B2B2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex in Embed ExtensionKit Extensions */,
 			);
 			name = "Embed ExtensionKit Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,6 +96,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7AAD5B1F2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = SuccessScreenTimeReportExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ABCAB452EE06FE30068FDBB /* ScreenTimeReportExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = ScreenTimeReportExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ABCAB5B2EE0CA3E0068FDBB /* CustomShieldExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CustomShieldExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ABCAB5D2EE0CA3E0068FDBB /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
@@ -104,6 +114,13 @@
 				Info.plist,
 			);
 			target = 73600FDFE246F379D25D29D9 /* iosApp */;
+		};
+		7AAD5B2F2EEEA856002ED0CD /* Exceptions for "SuccessScreenTimeReportExtension" folder in "SuccessScreenTimeReportExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7AAD5B1E2EEEA856002ED0CD /* SuccessScreenTimeReportExtension */;
 		};
 		7ABCAB552EE06FE30068FDBB /* Exceptions for "ScreenTimeReportExtension" folder in "ScreenTimeReportExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -143,6 +160,14 @@
 				7115560C91B7C459BF634AEC /* Exceptions for "iosApp" folder in "iosApp" target */,
 			);
 			path = iosApp;
+			sourceTree = "<group>";
+		};
+		7AAD5B202EEEA856002ED0CD /* SuccessScreenTimeReportExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7AAD5B2F2EEEA856002ED0CD /* Exceptions for "SuccessScreenTimeReportExtension" folder in "SuccessScreenTimeReportExtension" target */,
+			);
+			path = SuccessScreenTimeReportExtension;
 			sourceTree = "<group>";
 		};
 		7ABCAB462EE06FE30068FDBB /* ScreenTimeReportExtension */ = {
@@ -203,6 +228,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7AAD5B1C2EEEA856002ED0CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7ABCAB422EE06FE30068FDBB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -257,6 +289,7 @@
 				7ABCAB5F2EE0CA3E0068FDBB /* CustomShieldExtension */,
 				7ABCAB742EE0CA6E0068FDBB /* CustomShieldConfiguration */,
 				7ABCAB872EE0CB0E0068FDBB /* ActivityMonitorExtension */,
+				7AAD5B202EEEA856002ED0CD /* SuccessScreenTimeReportExtension */,
 				7ABCAB5C2EE0CA3E0068FDBB /* Frameworks */,
 				E8774369B3FD61708837337D /* Products */,
 			);
@@ -270,6 +303,7 @@
 				7ABCAB5B2EE0CA3E0068FDBB /* CustomShieldExtension.appex */,
 				7ABCAB702EE0CA6E0068FDBB /* CustomShieldConfiguration.appex */,
 				7ABCAB842EE0CB0E0068FDBB /* ActivityMonitorExtension.appex */,
+				7AAD5B1F2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -295,6 +329,7 @@
 				7ABCAB652EE0CA3E0068FDBB /* PBXTargetDependency */,
 				7ABCAB7A2EE0CA6E0068FDBB /* PBXTargetDependency */,
 				7ABCAB8D2EE0CB0E0068FDBB /* PBXTargetDependency */,
+				7AAD5B2A2EEEA856002ED0CD /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				1F2A1C2BA26F727A92117307 /* iosApp */,
@@ -316,6 +351,28 @@
 			productName = iosApp;
 			productReference = F7FE2A72C6DD91F8AFDD5B54 /* DisciplineApp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7AAD5B1E2EEEA856002ED0CD /* SuccessScreenTimeReportExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7AAD5B2C2EEEA856002ED0CD /* Build configuration list for PBXNativeTarget "SuccessScreenTimeReportExtension" */;
+			buildPhases = (
+				7AAD5B1B2EEEA856002ED0CD /* Sources */,
+				7AAD5B1C2EEEA856002ED0CD /* Frameworks */,
+				7AAD5B1D2EEEA856002ED0CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7AAD5B202EEEA856002ED0CD /* SuccessScreenTimeReportExtension */,
+			);
+			name = SuccessScreenTimeReportExtension;
+			packageProductDependencies = (
+			);
+			productName = SuccessScreenTimeReportExtension;
+			productReference = 7AAD5B1F2EEEA856002ED0CD /* SuccessScreenTimeReportExtension.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
 		};
 		7ABCAB442EE06FE30068FDBB /* ScreenTimeReportExtension */ = {
 			isa = PBXNativeTarget;
@@ -418,6 +475,9 @@
 					73600FDFE246F379D25D29D9 = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					7AAD5B1E2EEEA856002ED0CD = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					7ABCAB442EE06FE30068FDBB = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -455,11 +515,19 @@
 				7ABCAB5A2EE0CA3E0068FDBB /* CustomShieldExtension */,
 				7ABCAB6F2EE0CA6E0068FDBB /* CustomShieldConfiguration */,
 				7ABCAB832EE0CB0E0068FDBB /* ActivityMonitorExtension */,
+				7AAD5B1E2EEEA856002ED0CD /* SuccessScreenTimeReportExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7AAD5B1D2EEEA856002ED0CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7ABCAB432EE06FE30068FDBB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -527,6 +595,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7AAD5B1B2EEEA856002ED0CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7ABCAB412EE06FE30068FDBB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -558,6 +633,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7AAD5B2A2EEEA856002ED0CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7AAD5B1E2EEEA856002ED0CD /* SuccessScreenTimeReportExtension */;
+			targetProxy = 7AAD5B292EEEA856002ED0CD /* PBXContainerItemProxy */;
+		};
 		7ABCAB502EE06FE30068FDBB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7ABCAB442EE06FE30068FDBB /* ScreenTimeReportExtension */;
@@ -672,6 +752,64 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7AAD5B2D2EEEA856002ED0CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SuccessScreenTimeReportExtension/SuccessScreenTimeReportExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3V2R4684RL;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SuccessScreenTimeReportExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SuccessScreenTimeReportExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.honeycomb.disciplineapp.DisciplineApp.SuccessScreenTimeReportExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7AAD5B2E2EEEA856002ED0CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SuccessScreenTimeReportExtension/SuccessScreenTimeReportExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3V2R4684RL;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SuccessScreenTimeReportExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SuccessScreenTimeReportExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.honeycomb.disciplineapp.DisciplineApp.SuccessScreenTimeReportExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1013,6 +1151,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7AAD5B2C2EEEA856002ED0CD /* Build configuration list for PBXNativeTarget "SuccessScreenTimeReportExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7AAD5B2D2EEEA856002ED0CD /* Debug */,
+				7AAD5B2E2EEEA856002ED0CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7ABCAB522EE06FE30068FDBB /* Build configuration list for PBXNativeTarget "ScreenTimeReportExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

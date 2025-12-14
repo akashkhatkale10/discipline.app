@@ -90,9 +90,9 @@ fun MainScreen(
     val state by focusViewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state) {
-        if (state.timerState == TimerState.COMPLETED) {
+        if (state?.timerState == TimerState.COMPLETED) {
             navController.navigate(Screen.FocusSuccessScreenRoute(
-                state = state
+                state = state!!
             )) {
                 popUpTo<Screen.CreateFocusScreenRoute> {
                     inclusive = true
@@ -246,7 +246,7 @@ fun StickyTimer(
 //        focusViewModel.initVm()
     }
 
-    if (focusState.timerState == TimerState.RUNNING || focusState.timerState == TimerState.PAUSED) {
+    if (focusState?.timerState == TimerState.RUNNING || focusState?.timerState == TimerState.PAUSED) {
         Row(
             modifier = modifier
                 .background(
@@ -298,7 +298,7 @@ fun StickyTimer(
             Box(
                 modifier = Modifier
                     .bounceClick {
-                        if (focusState.timerState == TimerState.RUNNING) {
+                        if (focusState?.timerState == TimerState.RUNNING) {
                             focusViewModel.pauseTimer()
                         } else {
                             focusViewModel.resumeTimer()
@@ -317,7 +317,7 @@ fun StickyTimer(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (focusState.timerState == TimerState.RUNNING) {
+                if (focusState?.timerState == TimerState.RUNNING) {
                     Image(
                         imageVector = vectorResource(Res.drawable.pause),
                         contentDescription = null,

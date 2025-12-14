@@ -75,6 +75,7 @@ import AVFoundation
 @available(iOS 16.0, *)
 extension DeviceActivityReport.Context {
     static let socialMediaGuilt = Self("socialMediaGuilt")   // ← Must be identical everywhere
+    static let successScreen = Self("successScreen")  // ← Must be identical everywhere
 }
 
 
@@ -210,11 +211,10 @@ class AppBlockerUtil { // Continuing the simplified class
         store.shield.applications = nil
         store.shield.applicationCategories = nil
         store.shield.webDomains = nil
-//        store.application.blockedApplications = nil
-//        store.application.denyAppRemoval = false
-//        store.application.denyAppInstallation = false
-//        store.passcode.lockPasscode = false
-        print("Restrictions removed from ManagedSettingsStore.")
+        store.application.blockedApplications = nil
+        store.application.denyAppRemoval = false
+        store.application.denyAppInstallation = false
+        store.passcode.lockPasscode = false
         // NOTE: Also need to stop DeviceActivity monitoring.
     }
 }

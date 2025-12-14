@@ -10,3 +10,11 @@ actual fun NativeScreen(modifier: Modifier) {
 @Composable
 actual fun OnboardingUsageScreen(modifier: Modifier) {
 }
+
+@Composable
+actual fun SuccessScreenUsageScreen(
+    startTime: Long,
+    endTime: Long,
+    modifier: Modifier,
+) {
+}
