@@ -27,6 +27,14 @@ object DataUtils {
         return CurrentDate(day = day, month = month, date = date)
     }
 
+    fun getCurrentFormattedDate(today: LocalDate): CurrentDate {
+        val day = today.dayOfWeek.name.lowercase().replaceFirstChar { it.uppercase() }       // Friday
+        val month = today.month.name.lowercase().replaceFirstChar { it.uppercase() }         // September
+        val date = today.dayOfMonth.toString()                                               // 12
+
+        return CurrentDate(day = day, month = month, date = date)
+    }
+
 }
 
 @OptIn(ExperimentalTime::class)
@@ -52,4 +60,27 @@ fun LocalDateTime.minus(value: Long, unit: DateTimeUnit.TimeBased): LocalDateTim
     return this.toInstant(timeZone)
         .minus(value, unit)
         .toLocalDateTime(timeZone)
+}
+
+fun formatDuration(seconds: Long): String {
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+
+    return buildString {
+        if (hours > 0) append("${hours}h ")
+        append("${minutes}m")
+    }.trim()
+}
+
+fun epochMillisToHoursMinutes(epochMillis: Long): String {
+    val totalSeconds = epochMillis / 1000
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    return buildString {
+        if (hours > 0) append("${hours}h ")
+        if (minutes > 0 || hours > 0) append("${minutes}m ")
+        append("${seconds}s")
+    }.trim()
 }

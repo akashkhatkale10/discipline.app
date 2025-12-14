@@ -8,5 +8,6 @@ import org.koin.dsl.module
 val databaseModule = module {
     single { createDatabase() }
     single { get<AppDatabase>().timerDao() }
+    single { get<AppDatabase>().focusSessionDao() }
     single { TimerRepository(get()) }
 }

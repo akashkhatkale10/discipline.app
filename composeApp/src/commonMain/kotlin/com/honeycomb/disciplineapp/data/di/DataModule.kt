@@ -1,9 +1,11 @@
 package com.honeycomb.disciplineapp.data.di
 
+import com.honeycomb.disciplineapp.data.repository.FocusRepository
 import com.honeycomb.disciplineapp.data.repository.HomeRepositoryImpl
 import com.honeycomb.disciplineapp.data.repository.LoginRepositoryImpl
 import com.honeycomb.disciplineapp.data.repository.OnboardingRepositoryImpl
 import com.honeycomb.disciplineapp.data.repository.StartRoutineRepositoryImpl
+import com.honeycomb.disciplineapp.database.FocusSessionDao
 import com.honeycomb.disciplineapp.domain.repository.HomeRepository
 import com.honeycomb.disciplineapp.domain.repository.LoginRepository
 import com.honeycomb.disciplineapp.domain.repository.OnboardingRepository
@@ -22,6 +24,7 @@ val dataModule = module {
     factory <FirebaseFirestore>{ Firebase.firestore(app = Firebase.app, databaseId = "main") }
     factory <FirebaseFunctions>{ Firebase.functions }
     factory <FirebaseAuth>{ Firebase.auth }
+    factory <FocusRepository>{ FocusRepository(get(), get(), get()) }
     factory <OnboardingRepository> {
         OnboardingRepositoryImpl(get(), get())
     }
@@ -29,7 +32,7 @@ val dataModule = module {
         LoginRepositoryImpl(get(), get())
     }
     factory <HomeRepository> {
-        HomeRepositoryImpl(get(), get(), get())
+        HomeRepositoryImpl(get(), get(), get(), get<FocusSessionDao>())
     }
     factory <StartRoutineRepository> {
         StartRoutineRepositoryImpl(get())

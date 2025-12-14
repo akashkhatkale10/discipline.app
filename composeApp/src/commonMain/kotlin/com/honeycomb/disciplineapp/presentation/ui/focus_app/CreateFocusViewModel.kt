@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.honeycomb.disciplineapp.data.repository.TimerRepository
 import com.honeycomb.disciplineapp.presentation.focus_app.AppBlocker
 import com.honeycomb.disciplineapp.presentation.utils.Constants
+import com.honeycomb.disciplineapp.data.repository.FocusRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,7 @@ import org.koin.core.component.inject
 class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     private val timerRepository: TimerRepository by inject()
+    private val focusRepository: FocusRepository by inject()
 
     private val _state: MutableStateFlow<CreateFocusState?> = MutableStateFlow(null)
     val state: StateFlow<CreateFocusState?> = _state.asStateFlow()
@@ -33,6 +35,11 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
         }
         viewModelScope.launch {
             timerRepository.clearTimerState()
+            focusRepository.saveFocusSession(
+                _state.value!!.startTimestamp!!.toEpochMilliseconds(),
+                endTime,
+                _state.value!!.time * 60
+            )
         }
     }
 
@@ -50,6 +57,10 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
             _state.update {
                 it?.copy(
+                    timerState = persisted.state,
+                    time = persisted.initialDuration,
+                    startTimestamp = persisted.startTimestamp
+                ) ?: CreateFocusState(
                     timerState = persisted.state,
                     time = persisted.initialDuration,
                     startTimestamp = persisted.startTimestamp
@@ -117,6 +128,11 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
         timer.stop()
         viewModelScope.launch {
             timerRepository.clearTimerState()
+            focusRepository.saveFocusSession(
+                _state.value!!.startTimestamp!!.toEpochMilliseconds(),
+                Clock.System.now().toEpochMilliseconds(),
+                _state.value!!.time * 60
+            )
         }
     }
 

@@ -13,6 +13,7 @@ actual class AppBlocker {
         durationMinutes: Long,
         onPermissionSuccess: () -> Unit
     ) {
+        onPermissionSuccess()
         if (context !is Context) return
 
         val intent = Intent(context, AppBlockingService::class.java).apply {

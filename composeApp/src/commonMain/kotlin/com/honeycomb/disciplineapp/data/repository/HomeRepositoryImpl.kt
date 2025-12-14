@@ -1,31 +1,58 @@
 package com.honeycomb.disciplineapp.data.repository
 
 import com.honeycomb.disciplineapp.data.dto.FocusDto
+import com.honeycomb.disciplineapp.data.dto.FocusSessionDto
 import com.honeycomb.disciplineapp.data.dto.HomeDto
+import com.honeycomb.disciplineapp.database.FocusSessionDao
+import com.honeycomb.disciplineapp.database.FocusSessionEntity
 import com.honeycomb.disciplineapp.domain.repository.HomeRepository
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import dev.gitlive.firebase.functions.FirebaseFunctions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class HomeRepositoryImpl(
     auth: FirebaseAuth,
     private val functions: FirebaseFunctions,
     private val firestore: FirebaseFirestore,
+    private val dao: FocusSessionDao,
 ): HomeRepository, SafeApiCall(auth) {
 
-    override suspend fun getHome(): Result<List<FocusDto>> {
-        return safeCall {
-            val focus = firestore
+    override suspend fun getHome(): Result<List<FocusSessionDto>> {
+        val cloudResult = safeCall { user ->
+            val sessions = firestore
                 .collection("users")
-                .document(it.uid)
-                .collection("focus")
+                .document(user.uid)
+                .collection("session")
                 .get()
-
-            if (focus.documents.isNotEmpty()) {
-                Result.success(focus.documents.map { focus -> focus.data<FocusDto>() })
-            } else {
-                Result.success(emptyList())
+                .documents
+                .map { doc ->
+                    doc.data<FocusSessionDto>().copy(id = doc.id)
+                }
+            Result.success(sessions)
+        }
+        return if (cloudResult.isSuccess) {
+            println("AKASH_LOG:got from cloud: $cloudResult")
+            cloudResult
+        } else {
+            try {
+                val local =
+                    withContext(Dispatchers.Default) { dao.getAllFocusSessions() }.map { entity ->
+                        FocusSessionDto(
+                            id = entity.id.toString(),
+                            startTimestamp = entity.startTimestamp,
+                            endTimestamp = entity.endTimestamp,
+                            durationSeconds = entity.durationSeconds,
+                            notes = entity.notes
+                        )
+                    }
+                println("AKASH_LOG:got from local: $local")
+                Result.success(local)
+            } catch (e: Exception) {
+                println("AKASH_LOG:failure $e")
+                Result.failure(e)
             }
         }
     }

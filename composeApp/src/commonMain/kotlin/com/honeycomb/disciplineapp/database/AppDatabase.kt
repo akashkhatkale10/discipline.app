@@ -13,6 +13,7 @@ import androidx.room.RoomDatabaseConstructor
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun timerDao(): TimerDao
+    abstract fun focusSessionDao(): FocusSessionDao
 }
 
 // The Room compiler generates the `actual` implementations.
