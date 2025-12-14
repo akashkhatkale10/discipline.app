@@ -14,7 +14,7 @@ import AVFoundation
     @objc public static let shared = AppBlockerSwift()
     private let center = DeviceActivityCenter()
     
-    let state = AppBlockerState()
+    let state = AppBlockerState.shared
     let appBlocker = AppBlockerUtil()
     
     var profileHost: UIHostingController<ProfileEditorView>?
@@ -46,7 +46,10 @@ import AVFoundation
         appBlocker.deactivateRestrictions()
     }
     
-    @objc public func startBlocking() {}
+    
+    @objc public func startBlocking(time: Int) {
+        appBlocker.activateRestrictions(time: time, selection: state.activitySelection)
+    }
     
     
     @objc public func requestPermission(
@@ -92,8 +95,6 @@ struct ProfileEditorView: View {
         self.exclude = exclude
         self.onSave = onSave
         self.showSheet = showSheet
-        
-        state.activitySelection.includeEntireCategory
     }
     
     var body: some View {
@@ -124,9 +125,6 @@ struct ProfileEditorView: View {
             )
         }
     }
-    func saveSelection(_ selection: FamilyActivitySelection) {
-        appBlocker.activateRestrictions(selection: selection)
-    }
 }
 
 @available(iOS 16.0, *)
@@ -147,34 +145,30 @@ struct TokenIconView: View {
 class AppBlockerUtil { // Continuing the simplified class
     let store = ManagedSettingsStore(named: ManagedSettingsStore.Name("demoRestrictions"))
     let center = DeviceActivityCenter()
+    let monitor = DeviceActivityMonitor()
     // Define a unique name for your activity
     static let activityName = DeviceActivityName("demoRestrictions")
     // ... (applyRestrictions, removeRestrictions from above) ...
-    func startMonitoringSchedule(selectedApps: FamilyActivitySelection) {
+    func startMonitoringSchedule(time: Int, selection: FamilyActivitySelection) {
         // Define a schedule. This example is 24/7, repeating daily.
         let now = Calendar.current.dateComponents([.hour, .minute], from: Date())
-        let endDate = Calendar.current.date(byAdding: .minute, value: 5, to: Date())!
+        let endDate = Calendar.current.date(byAdding: .minute, value: time, to: Date())!
         let end = Calendar.current.dateComponents([.hour, .minute], from: endDate)
-        
-//        let event = DeviceActivityEvent(
-//            applications: selectedApps.applicationTokens
-//        )
-//
-//        let events: [DeviceActivityEvent.Name: DeviceActivityEvent] = [
-//            .init("daily_limit"): event
-//        ]
 
         let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 0, minute: 0),
-            intervalEnd: DateComponents(hour: 23, minute: 59),
-            repeats: true,
+            intervalStart: now,
+            intervalEnd: end,
+            repeats: false,
             warningTime: nil
         )
         print("Starting DeviceActivity monitoring for schedule...")
         do {
             // Start monitoring. This tells the system to check the 'store'
             // associated with this activity during the 'schedule'.
-            try center.startMonitoring(Self.activityName, during: schedule)
+            try center.startMonitoring(
+                Self.activityName,
+                during: schedule
+            )
             print("Monitoring started successfully.")
         } catch {
             print("Error starting DeviceActivity monitoring: \(error)")
@@ -187,18 +181,23 @@ class AppBlockerUtil { // Continuing the simplified class
         print("Monitoring stopped.")
     }
     // Combined Activation Logic (Similar to provided code)
-    func activateRestrictions(selection: FamilyActivitySelection) {
+    func activateRestrictions(time: Int, selection: FamilyActivitySelection) {
         applyRestrictions(selection: selection) // Step 2: Define rules
-        startMonitoringSchedule(selectedApps: selection)             // Step 3: Activate schedule
+        startMonitoringSchedule(time: time, selection: selection)             // Step 3: Activate schedule
     }
     
     func applyRestrictions(selection: FamilyActivitySelection) {
-//        store.shield.applications = selection.applicationTokens
-        store.application.blockedApplications = selection.applications
-        store.application.denyAppRemoval = true
-        //store.application.denyAppInstallation = true
-        store.passcode.lockPasscode = true
-        store.shield.applicationCategories = .all()
+        let applicationTokens = selection.applicationTokens
+        let categoryTokens = selection.categoryTokens
+        let webTokens = selection.webDomainTokens
+        store.shield.applications = applicationTokens.isEmpty ? nil : applicationTokens
+        store.shield.applicationCategories = categoryTokens.isEmpty ? nil : .specific(categoryTokens)
+        store.shield.webDomains = webTokens.isEmpty ? nil : webTokens
+//        store.application.blockedApplications = selection.applications
+//        store.application.denyAppRemoval = true
+//        store.application.denyAppInstallation = true
+//        store.passcode.lockPasscode = true
+//        store.shield.applicationCategories = .all()
     }
     
     // Combined Deactivation Logic
@@ -208,10 +207,13 @@ class AppBlockerUtil { // Continuing the simplified class
     }
     func removeRestrictions() {
         print("Removing restrictions...")
-        // Clear the shield configuration
         store.shield.applications = nil
         store.shield.applicationCategories = nil
         store.shield.webDomains = nil
+//        store.application.blockedApplications = nil
+//        store.application.denyAppRemoval = false
+//        store.application.denyAppInstallation = false
+//        store.passcode.lockPasscode = false
         print("Restrictions removed from ManagedSettingsStore.")
         // NOTE: Also need to stop DeviceActivity monitoring.
     }

@@ -21,11 +21,14 @@ actual class AppBlocker {
         context: Any?,
         packageNames: List<String>,
         durationMinutes: Long,
-        onFinished: () -> Unit
+        onPermissionSuccess: () -> Unit
     ) {
         requestPermission(
             onSuccess = {
-                manager.startBlocking()
+                onPermissionSuccess()
+                manager.startBlockingWithTime(
+                    time = durationMinutes
+                )
             },
             onFailure = {
 

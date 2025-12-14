@@ -11,7 +11,7 @@ actual class AppBlocker {
         context: Any?,
         packageNames: List<String>,
         durationMinutes: Long,
-        onFinished: () -> Unit
+        onPermissionSuccess: () -> Unit
     ) {
         if (context !is Context) return
 
@@ -20,7 +20,7 @@ actual class AppBlocker {
             putExtra("durationMs", durationMinutes)
         }
         context.startForegroundService(intent)
-        AppBlockingService.onSessionEnd = onFinished
+//        AppBlockingService.onSessionEnd = onFinished
     }
 
     actual fun stopBlocking() {

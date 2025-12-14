@@ -4,16 +4,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.honeycomb.disciplineapp.data.dto.HabitDataDto
 import com.honeycomb.disciplineapp.data.dto.OnboardingDto
 import com.honeycomb.disciplineapp.presentation.Screen
 import com.honeycomb.disciplineapp.presentation.models.OnboardingScreenType

@@ -13,11 +13,12 @@ expect class AppBlocker() {
         onSuccess: () -> Unit = {},
         onFailure: () -> Unit = {}
     )
+
     fun startBlocking(
         context: Any?,
         packageNames: List<String>,
         durationMinutes: Long,
-        onFinished: () -> Unit = {}
+        onPermissionSuccess: () -> Unit
     )
 
     fun stopBlocking()

@@ -100,6 +100,8 @@ fun CreateFocusScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
+    val appBlockerViewModel = koinViewModel<AppBlockerViewModel>()
+    val context = LocalPlatformContext.current
     val state by viewModel.state.collectAsState()
     val minutes by viewModel.minutes.collectAsState()
     val seconds by viewModel.seconds.collectAsState()
@@ -118,7 +120,7 @@ fun CreateFocusScreen(
         animationSpec = tween(durationMillis = 500, easing = LinearEasing)
     )
     val animatedProgress by animateFloatAsState(
-        targetValue = remainingSeconds / (1 * 60f),
+        targetValue = remainingSeconds / (state.time * 60f),
         animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
     )
 
@@ -137,10 +139,7 @@ fun CreateFocusScreen(
     LaunchedEffect(state) {
         if (state.timerState == TimerState.COMPLETED) {
             navController.navigate(Screen.FocusSuccessScreenRoute(
-                state = CreateFocusState(
-                    timerState = state.timerState,
-                    time = viewModel.timer.totalDurationSeconds / 60
-                )
+                state = state
             )) {
                 popUpTo<Screen.CreateFocusScreenRoute> {
                     inclusive = true
@@ -301,7 +300,7 @@ fun CreateFocusScreen(
                         },
                         title = "\uD83D\uDEAB   blocked apps",
                         onClick = {
-                            viewModel.appBlocker.selectApps(
+                            appBlockerViewModel.appBlocker.selectApps(
                                 exclude = true,
                                 onAppsSelected = {
                                     selectedAppTokensSize = it.size
@@ -422,7 +421,17 @@ fun CreateFocusScreen(
                             )
                         },
                         onClick = {
-                            viewModel.startTimer(state.time)
+                            appBlockerViewModel.appBlocker.startBlocking(
+                                context = context,
+                                packageNames = emptyList(),
+                                durationMinutes = state.time.toLong(),
+                                onPermissionSuccess = {
+                                    viewModel.startTimer(
+                                        context = context,
+                                        time = state.time
+                                    )
+                                }
+                            )
                         }
                     )
                 }
@@ -441,6 +450,8 @@ fun CreateFocusScreen(
                             )
                         },
                         onClick = {
+                            appBlockerViewModel.appBlocker.stopBlocking()
+
                             viewModel.stopTimer()
                         }
                     )
@@ -691,7 +702,7 @@ fun FocusOptionRow(
     ) {
         Box(
             modifier = Modifier
-                .height(36.dp)
+                .height(40.dp)
                 .bounceClick(onClick = onClick)
                 .fillMaxWidth()
                 .background(
@@ -756,6 +767,7 @@ fun FocusOptionRow(
     ) {
         Box(
             modifier = modifier
+                .height(40.dp)
                 .bounceClick(onClick = onClick)
                 .fillMaxWidth()
                 .background(

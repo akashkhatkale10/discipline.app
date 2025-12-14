@@ -19,8 +19,6 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
 
     private val timerRepository: TimerRepository by inject()
 
-    val appBlocker = AppBlocker()
-
     private val _state: MutableStateFlow<CreateFocusState> = MutableStateFlow(CreateFocusState())
     val state: StateFlow<CreateFocusState> = _state.asStateFlow()
 
@@ -76,7 +74,7 @@ class CreateFocusViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun startTimer(time: Int) {
+    fun startTimer(context: Any?, time: Int) {
         _state.update {
             it.copy(
                 timerState = TimerState.RUNNING,
